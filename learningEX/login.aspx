@@ -10,45 +10,45 @@
 </head>
 <body>
     <h1>歡迎登錄</h1>
-    <form id="loginForm">
+    <form id="loginForm" runat="server">
         <label for="username">用戶名：</label>
-        <input type="text" id="username" name="username" required><br><br>
+        <asp:TextBox ID="txtUsername" runat="server" Required="true"></asp:TextBox><br><br>
 
         <label for="password">密碼：</label>
-        <input type="password" id="password" name="password" required><br><br>
+        <asp:TextBox ID="txtPassword" runat="server" TextMode="Password" Required="true"></asp:TextBox><br><br>
 
-        <input type="submit" value="登錄">
+        <asp:Button ID="btnLogin" runat="server" Text="登錄" OnClick="btnLogin_Click" />
     </form>
         <a href="register.aspx"><button>註冊</button></a>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function() {
+        /*$(document).ready(function() {
             $("#loginForm").submit(function(e) {
                 e.preventDefault();
-                var username = $("#username").val();
-                var password = $("#password").val();
+                var username = $("#txtUsername").val(); // 獲取使用者名稱
+                var password = $("#txtPassword").val(); // 獲取密碼
 
                 $.ajax({
                     type: "POST",
-                    url: "loginAjax.aspx/Login",
+                    url: "login.aspx/Login",
                     data: JSON.stringify({ username: username, password: password }),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function(response) {
                         if (response.d) {
-                            window.location.href = "mainpage.aspx";
                             alert("登錄成功");
                         } else {
                             alert("登錄失敗！");
                         }
+                        
                     },
                     error: function(error) {
                         alert("發生錯誤：" + error.responseText);
                     }
                 });
             });
-        });
+        });*/
     </script>
 </body>
 </html>

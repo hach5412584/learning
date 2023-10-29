@@ -11,7 +11,15 @@ namespace learningEX
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            System.Diagnostics.Debug.WriteLine($"mainpageLoad");
+            if (!IsPostBack)
+            {
+                if (Session["UserName"] != null)
+                {
+                    string username = Session["UserName"].ToString();
+                    lblUserName.Text = "歡迎您，" + username + "！";
+                }
+            }
         }
     }
 }

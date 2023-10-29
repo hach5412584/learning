@@ -12,8 +12,10 @@
         <div>
             <ul>
                 <li class="active"><a href="login.aspx">LOGIN</a></li>
+                <asp:Label ID="lblUserName" runat="server"></asp:Label>
             </ul>
         </div>
+        
     </form>
 </body>
 </html>

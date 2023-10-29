@@ -71,10 +71,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="login.aspx" />
-    <Content Include="loginAjax.aspx" />
     <Content Include="mainpage.aspx" />
     <Content Include="register.aspx" />
-    <Content Include="registerAjax.aspx" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -86,13 +84,6 @@
     </Compile>
     <Compile Include="login.aspx.designer.cs">
       <DependentUpon>login.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="loginAjax.aspx.cs">
-      <DependentUpon>loginAjax.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="loginAjax.aspx.designer.cs">
-      <DependentUpon>loginAjax.aspx</DependentUpon>
     </Compile>
     <Compile Include="mainpage.aspx.cs">
       <DependentUpon>mainpage.aspx</DependentUpon>
@@ -108,13 +99,6 @@
     </Compile>
     <Compile Include="register.aspx.designer.cs">
       <DependentUpon>register.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="registerAjax.aspx.cs">
-      <DependentUpon>registerAjax.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="registerAjax.aspx.designer.cs">
-      <DependentUpon>registerAjax.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

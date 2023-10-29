@@ -41,7 +41,7 @@
 
                     $.ajax({
                         type: "POST",
-                        url: "registerAjax.aspx/Register",  // 這裡需要指向你的註冊方法
+                        url: "register.aspx/Register",  // 這裡需要指向你的註冊方法
                         data: JSON.stringify({ username: username, password: password, email: email, name: name, studentID: studentID }),
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
