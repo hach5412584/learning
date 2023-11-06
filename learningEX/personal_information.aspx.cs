@@ -7,11 +7,11 @@ using System.Web.UI.WebControls;
 
 namespace learningEX
 {
-    public partial class mainpage : System.Web.UI.Page
+    public partial class personal_information : System.Web.UI.Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            
+
         }
     }
 }

@@ -18,8 +18,8 @@
         <asp:TextBox ID="txtPassword" runat="server" TextMode="Password" Required="true"></asp:TextBox><br><br>
 
         <asp:Button ID="btnLogin" runat="server" Text="登錄" OnClick="btnLogin_Click" />
+        <asp:Label ID="lblMessage" runat="server" Text="" ForeColor="Red"></asp:Label>
     </form>
-        <a href="register.aspx"><button>註冊</button></a>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>

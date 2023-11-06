@@ -11,11 +11,11 @@
     <form id="form1" runat="server">
         <div>
             <ul>
-                <li class="active"><a href="login.aspx">LOGIN</a></li>
-                <asp:Label ID="lblUserName" runat="server"></asp:Label>
+                <li class="active"><a href="login.aspx">登陸</a></li>
+                <li class="active"><a href="register.aspx">註冊</a></li>
+                <li class="active">訪客</li>
             </ul>
         </div>
-        
     </form>
 </body>
 </html>
