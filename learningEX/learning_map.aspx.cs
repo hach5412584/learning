@@ -17,7 +17,8 @@ namespace learningEX
                 {
                     string username = Session["UserName"].ToString();
                     string userID = Session["UserID"].ToString();
-                    lblUserName.Text = "歡迎您，" + username + "！" + userID;
+                    lblUserName.ForeColor = System.Drawing.Color.Gray;
+                    lblUserName.Text = "歡迎您" + username;
                 }
             }
         }

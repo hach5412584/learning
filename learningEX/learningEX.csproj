@@ -73,9 +73,11 @@
     <Content Include="learning_map.aspx" />
     <Content Include="learning_scale.aspx" />
     <Content Include="login.aspx" />
+    <Content Include="logout.aspx" />
     <Content Include="mainpage.aspx" />
     <Content Include="personal_information.aspx" />
     <Content Include="register.aspx" />
+    <Content Include="topic.aspx" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -102,6 +104,13 @@
     <Compile Include="login.aspx.designer.cs">
       <DependentUpon>login.aspx</DependentUpon>
     </Compile>
+    <Compile Include="logout.aspx.cs">
+      <DependentUpon>logout.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="logout.aspx.designer.cs">
+      <DependentUpon>logout.aspx</DependentUpon>
+    </Compile>
     <Compile Include="mainpage.aspx.cs">
       <DependentUpon>mainpage.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -123,6 +132,13 @@
     </Compile>
     <Compile Include="register.aspx.designer.cs">
       <DependentUpon>register.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="topic.aspx.cs">
+      <DependentUpon>topic.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="topic.aspx.designer.cs">
+      <DependentUpon>topic.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
