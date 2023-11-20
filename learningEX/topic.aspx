@@ -4,69 +4,166 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>翻頁式題本</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.js"></script>
+    <title>Branch-and-Bound</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 100%;
+            width: 100%;
+            max-height: 100%;
+            height: 100%;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            background-color: #fff;
+            display: flex;
+            flex-direction: row;
+            align-items: center; /* 將元素在交叉軸上（這裡是垂直軸）置中 */
+        }
+
+        .Image-container {
+            flex: 5;
+            flex-basis: 50%;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .datatextbutton-container {
+            max-width: 100%;
+            max-height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 將元素在交叉軸上（這裡是垂直軸）置中 */
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .button-container {
+            flex: 1;
+            display: flex;
+            flex-direction: row; /* 橫向排列 */
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+            .button-container input[type="button"] {
+                flex: 1;
+                flex-basis: 10%;
+                margin: 0 20px; /* 設置左右間距為 10px，上下間距為 0 */
+                padding: 10px;
+                background-color: #4CAF50;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+        .thumbnail {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .input-container {
+            width: 48%; /* 考慮到margin和padding，這裡使用48%而不是50% */
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .button-input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .detailedexplanation-container {
+            flex: 1;
+            flex-basis: 10%;
+            padding: 20px;
+            text-align: left;
+        }
+
+
+        .data-container {
+            flex: 8; /* 佔據 7/10 的空間 */
+            flex-basis: 80%; /* 設定初始寬度為 70% */
+            padding: 20px;
+            text-align: left;
+        }
+
+        .data {
+            font-size: 25px;
+            color: #333;
+            font-weight: bold;
+            word-break: break-all; /* 在單詞內部進行換行 */
+            overflow: hidden; /* 超出容器的部分隱藏 */
+        }
+
+        .detailedexplanation {
+            font-size: 25px;
+            color: red;
+            font-weight: bold;
+            word-break: break-all; /* 在單詞內部進行換行 */
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="page">
-            <div class="page-content">
-                <h2>題目 1</h2>
-                <p>這是題目的描述。</p>
-                <button class="btn btn-primary next-page">下一頁</button>
+    <form id="form1" runat="server">
+        <div class="container">
+            <div class="Image-container">
+                <asp:GridView ID="GridViewImages" runat="server" AutoGenerateColumns="False" ShowHeader="False">
+                    <Columns>
+                        <asp:TemplateField>
+                            <ItemTemplate>
+                                <asp:Label ID="lblDatatext" runat="server" Text='<%# Eval("datatext") %>' Visible="false"></asp:Label>
+                                <asp:Image ID="imgPhoto" runat="server" ImageUrl='<%#  GetImageURL(Eval("Image")) %>' CssClass="thumbnail" />
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+            </div>
+
+
+            <div class="datatextbutton-container">
+                <div class="data-container">
+                    <div id="Text" runat="server" class="data"></div>
+                </div>
+                <div class="detailedexplanation-container">
+                    <div id="detailedexplanation" runat="server" class="detailedexplanation"></div>
+                </div>
+                <div class="inputandcheckbutton-container">
+                    <div class="input-container">
+                        <input name="inputdata" type="text" class="text-input" placeholder="輸入答案：" />
+                        <asp:Button ID="btnDetectInput" runat="server" Text="Check" OnClick="DetectInput_Click" CssClass="button-input" />
+                    </div>
+
+                </div>
+                <div class="button-container">
+                    <input type="button" id="btnPrev" runat="server" value="上一頁" onserverclick="btnPrev_Click" />
+                    <div id="pageload" runat="server"></div>
+                    <input type="button" id="btnNext" runat="server" value="下一頁" onserverclick="btnNext_Click" />
+                </div>
             </div>
         </div>
-        <div class="page">
-            <div class="page-content">
-                <h2>題目 2</h2>
-                <p>這是第二題的描述。</p>
-                <button class="btn btn-primary prev-page">上一頁</button>
-                <button class="btn btn-primary next-page">下一頁</button>
-            </div>
-        </div>
-        <!-- 其他題目頁面依此類推 -->
-        <div class="page">
-            <div class="page-content">
-                <h2>最後一題</h2>
-                <p>這是最後一題的描述。</p>
-                <button class="btn btn-primary prev-page">上一頁</button>
-                <button class="btn btn-primary submit">繳交</button>
-            </div>
-        </div>
-    </div>
-    <script>
-        $(document).ready(function () {
-            var pages = $('.page');
-
-            // 初始化
-            pages.hide().eq(0).show();
-
-            // 上一頁
-            $('.prev-page').click(function () {
-                var currentPage = $(this).closest('.page');
-                currentPage.hide();
-                currentPage.prev().show();
-            });
-
-            // 下一頁
-            $('.next-page').click(function () {
-                var currentPage = $(this).closest('.page');
-                currentPage.hide();
-                currentPage.next().show();
-            });
-
-            // 繳交
-            $('.submit').click(function () {
-                alert('繳交成功，顯示正解並跳轉到學習量表頁面');
-                // 在這裡你可以實現顯示正解和跳轉到學習量表頁面的相關邏輯
-            });
-        });
-    </script>
-
+    </form>
 </body>
 </html>

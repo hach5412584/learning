@@ -34,7 +34,7 @@
                         <a class="nav-link" href="learning_map.aspx">學習地圖</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="register.aspx">題目</a>
+                        <a class="nav-link" href="topic.aspx">題目</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="learning_scale.aspx">自動補強出題</a>
