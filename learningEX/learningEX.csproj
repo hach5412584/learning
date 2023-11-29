@@ -78,6 +78,7 @@
     <Content Include="personal_information.aspx" />
     <Content Include="register.aspx" />
     <Content Include="topic.aspx" />
+    <Content Include="topic_list.aspx" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -139,6 +140,13 @@
     </Compile>
     <Compile Include="topic.aspx.designer.cs">
       <DependentUpon>topic.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="topic_list.aspx.cs">
+      <DependentUpon>topic_list.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="topic_list.aspx.designer.cs">
+      <DependentUpon>topic_list.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
