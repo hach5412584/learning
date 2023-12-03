@@ -52,6 +52,7 @@ namespace learningEX
                             // 當前頁面
                             pageload.InnerText = $"{currentPage}/{GetTotalPages()}";
                         }
+                        connection.Close();
                     }
                 }
             }
@@ -100,7 +101,9 @@ namespace learningEX
                 {
                     connection.Open();
                     int totalRows = (int)command.ExecuteScalar();
+                    connection.Close();
                     return totalRows;
+
                 }
             }
         }

@@ -51,6 +51,7 @@ namespace learningEX
                     cmd.Parameters.AddWithValue("@StudentID", studentID);
 
                     cmd.ExecuteNonQuery();
+                    connection.Close();
                     return "註冊成功"; // 註冊成功，返回 true
                 }
             }
@@ -72,7 +73,7 @@ namespace learningEX
                     SqlCommand cmd = new SqlCommand(sql, connection);
                     cmd.Parameters.AddWithValue("@Username", username);
                     int count = (int)cmd.ExecuteScalar();
-
+                    connection.Close();
                     return count > 0;
                 }
             }
@@ -94,7 +95,7 @@ namespace learningEX
                     SqlCommand cmd = new SqlCommand(sql, connection);
                     cmd.Parameters.AddWithValue("@Email", email);
                     int count = (int)cmd.ExecuteScalar();
-
+                    connection.Close();
                     return count > 0;
                 }
             }
@@ -116,7 +117,7 @@ namespace learningEX
                     SqlCommand cmd = new SqlCommand(sql, connection);
                     cmd.Parameters.AddWithValue("@StudentID", studentID);
                     int count = (int)cmd.ExecuteScalar();
-
+                    connection.Close();
                     return count > 0;
                 }
             }

@@ -34,7 +34,7 @@
                         <a class="nav-link" href="learning_map.aspx">學習地圖</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="topicDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">題目
+                        <a class="nav-link dropdown-toggle" id="topicDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">題目
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="topic_list.aspx?questionType=Algorithm">演算法</a></li>
@@ -42,7 +42,7 @@
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">自動出題
+                        <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">自動出題
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="#">演算法</a></li>
