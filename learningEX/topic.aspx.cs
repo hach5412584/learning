@@ -1,171 +1,334 @@
 ﻿using System;
 using System.Data.SqlClient;
-using System.Web;
+using System.Diagnostics;
 using System.Web.UI.WebControls;
 
 namespace learningEX
 {
     public partial class topic : System.Web.UI.Page
     {
-        private const string ConnectionString = "Data Source=DESKTOP-VLAJAD1;Initial Catalog=Algorithm Image;User Id=test;Password=";
-        private int itemsPerPage = 1;
+        string ConnectionString = "Data Source=DESKTOP-VLAJAD1;Initial Catalog=TopicDatabase;User Id=test;Password=;";
+        string topicname = "BranchandBound";
+        string topictype = "Algorithm";
 
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                ViewState["CurrentPage"] = 1;
-                BindGridView();
+                // 初始化 ViewState["QuestionIndex"]，表示當前題目的索引
+                ViewState["QuestionIndex"] = 0;
+                TakeQuestion();
             }
         }
 
-        protected void BindGridView()
+        // 定義 TakeID 方法
+        private void TakeID()
         {
             try
             {
-                int currentPage = (int)ViewState["CurrentPage"];
-                int startRow = (currentPage - 1) * itemsPerPage + 1;
-                int endRow = startRow + itemsPerPage - 1;
-
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string query = "SELECT datatext, ans, Detailedexplanation, Image FROM (SELECT datatext, ans, Detailedexplanation, Image, ROW_NUMBER() OVER (ORDER BY ImageID) AS RowNum FROM dbo.Images) AS NumberedImages WHERE RowNum BETWEEN @StartRow AND @EndRow";
+                    connection.Open();
+
+                    // 使用参数化查询以防止SQL注入
+                    string query = "SELECT ID FROM dbo.TopicNum WHERE Topicname = @Topicname AND Topictype = @Topictype";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        command.Parameters.AddWithValue("@StartRow", startRow);
-                        command.Parameters.AddWithValue("@EndRow", endRow);
+                        // 添加参数
+                        command.Parameters.AddWithValue("@Topicname", topicname);
+                        command.Parameters.AddWithValue("@Topictype", topictype);
 
-                        connection.Open();
-                        SqlDataReader reader = command.ExecuteReader();
-
-                        GridViewImages.DataSource = reader;
-                        GridViewImages.DataBind();
-
-                        if (GridViewImages.Rows.Count > 0)
+                        // 执行查询
+                        using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            var lblDatatext = GridViewImages.Rows[0].FindControl("lblDatatext") as Label;
-                            string datatextValue = HttpUtility.HtmlDecode(lblDatatext.Text);
+                            if (reader.Read())
+                            {
+                                // 如果有匹配的记录，获取topicID
+                                string topicID = reader["ID"].ToString();
+                                ViewState["TopicID"] = topicID;
+                                Debug.WriteLine("TopicID found: " + topicID);
 
-                            // 將 datatext 寫入到 text 中
-                            Text.InnerHtml = datatextValue;
-                            // 當前頁面
-                            pageload.InnerText = $"{currentPage}/{GetTotalPages()}";
+                            }
+                            else
+                            {
+                                Debug.WriteLine("No matching record found.");
+                            }
                         }
-                        connection.Close();
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error: {ex.Message}");
+                Debug.WriteLine("Error: " + ex.Message);
+                // 处理异常
             }
         }
 
-        private int GetTotalPages()
+
+        private void TakeQuestion()
         {
-            int totalRows = GetTotalRows();
-            int totalPages = (int)Math.Ceiling((double)totalRows / itemsPerPage);
-            return totalPages;
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(ConnectionString))
+                {
+                    connection.Open();
+                    TakeID();
+                    string topicID = ViewState["TopicID"] as string;
+                    int pageSize = 1; // 每頁顯示的題目數量
+                    // 獲取當前頁碼
+                    int currentPage = (int)ViewState["QuestionIndex"];
+                    int totalPages = GetTotalQuestions();
+                    pageload.InnerText = $"{currentPage + 1}/{totalPages}";
+                    // 計算分頁的 OFFSET
+                    int offset = currentPage * pageSize;
+                    // 使用参数化查询以防止 SQL 注入
+                    string query = "SELECT ImageID, questionID, Questiondata FROM dbo.TopicQuestion WHERE ID = @TopicID ORDER BY (SELECT NULL) OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@TopicID", topicID);
+                        command.Parameters.AddWithValue("@Offset", offset);
+                        command.Parameters.AddWithValue("@PageSize", pageSize);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                string imageID = reader["ImageID"].ToString();
+                                string questionID = reader["questionID"].ToString();
+                                string questionData = reader["Questiondata"].ToString();
+
+                                ViewState["QuestionID"] = questionID;
+                                questiondata.InnerText = questionData;
+                                TakeImage(topicID, imageID);
+
+                                Debug.WriteLine($" ImageID: {imageID}, questionID: {questionID}, Questiondata: {questionData}");
+                            }
+                            else
+                            {
+                                Debug.WriteLine("No matching record found.");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Error: " + ex.Message);
+                // 处理异常
+            }
+        }
+
+        private int GetTotalQuestions()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(ConnectionString))
+                {
+                    connection.Open();
+                    string topicID = ViewState["TopicID"] as string;
+                    string query = "SELECT COUNT(*) FROM dbo.TopicQuestion WHERE ID = @TopicID";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@TopicID", topicID);
+
+                        // 使用 ExecuteScalar 來取得總題數
+                        object result = command.ExecuteScalar();
+
+                        // 轉換結果為整數
+                        return Convert.ToInt32(result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Error: " + ex.Message);
+                // 處理異常，這裡你可以自行決定如何處理錯誤，例如返回一個默認值或拋出異常。
+                return -1; // 這只是一個示例，實際應用中應根據情況修改
+            }
+        }
+
+
+
+        protected void btnNext_Click(object sender, EventArgs e)
+        {
+            // 獲取當前索引
+            int currentIndex = (int)ViewState["QuestionIndex"];
+            int totalPages = GetTotalQuestions();
+            if (currentIndex + 1 < totalPages)
+            {
+                // 更新索引
+                currentIndex++;
+
+                // 更新 ViewState
+                ViewState["QuestionIndex"] = currentIndex;
+                detailedexplanationtext.InnerText = "";
+                // 獲取下一題
+                TakeQuestion();
+            }
+
         }
 
         protected void btnPrev_Click(object sender, EventArgs e)
         {
-            int currentPage = (int)ViewState["CurrentPage"];
-            ViewState["CurrentPage"] = Math.Max(1, currentPage - 1);
-            detailedexplanation.InnerHtml = "";
-            BindGridView();
-        }
-
-        protected void btnNext_Click(object sender, EventArgs e)
-        {
-            int currentPage = (int)ViewState["CurrentPage"];
-            int totalRows = GetTotalRows();
-            int nextPage = currentPage + 1;
-
-            detailedexplanation.InnerHtml = "";
-
-            if ((nextPage - 1) * itemsPerPage < totalRows)
+            int currentIndex = (int)ViewState["QuestionIndex"];
+            // 獲取當前索引
+            if (currentIndex > 0)
             {
-                ViewState["CurrentPage"] = nextPage;
-                BindGridView();
+                currentIndex--;
+
+                // 更新 ViewState
+                ViewState["QuestionIndex"] = currentIndex;
+                detailedexplanationtext.InnerText = "";
+                // 獲取上一題
+                TakeQuestion();
             }
         }
 
-        private int GetTotalRows()
+
+        private void TakeImage(string topicID, string imageID)
         {
-            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            try
             {
-                string query = "SELECT COUNT(*) FROM dbo.Images";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
                     connection.Open();
-                    int totalRows = (int)command.ExecuteScalar();
-                    connection.Close();
-                    return totalRows;
+                    string query = "SELECT Image FROM dbo.TopicImage WHERE ID = @TopicID AND ImageID = @ImageID";
 
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@TopicID", topicID);
+                        command.Parameters.AddWithValue("@ImageID", imageID);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                byte[] imageData = (byte[])reader["Image"];
+                                string base64String = Convert.ToBase64String(imageData);
+                                imgTopic.ImageUrl = "data:image/jpeg;base64," + base64String;
+                            }
+                            else
+                            {
+                                Debug.WriteLine("No matching record found.");
+                            }
+                        }
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Error: " + ex.Message);
             }
         }
 
-        protected string GetImageURL(object image)
+        private string TakeAns(string questionID)
         {
-            byte[] bytes = (byte[])image;
-            string base64String = Convert.ToBase64String(bytes);
-            return $"data:image/png;base64,{base64String}";
-        }
-
-        protected void DetectInput_Click(object sender, EventArgs e)
-        {
-            string inputData = Request.Form["inputdata"];
-            string correctAnswer = GetCorrectAnswer();
-            string detailedExplanation = GetDetailedExplanation();
-            if (correctAnswer != "")
+            try
             {
-                if (inputData == correctAnswer)
+                using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    detailedexplanation.InnerHtml = "正確";
-                }
-                else
-                {
-                    detailedexplanation.InnerHtml = "正確答案：" + correctAnswer + "<br>" + detailedExplanation;
-                }
-            }
-        }
-
-        private string GetCorrectAnswer()
-        {
-            int currentPage = (int)ViewState["CurrentPage"];
-            int startRow = (currentPage - 1) * itemsPerPage + 1;
-
-            using (SqlConnection connection = new SqlConnection(ConnectionString))
-            {
-                string query = "SELECT ans FROM (SELECT ans, ROW_NUMBER() OVER (ORDER BY ImageID) AS RowNum FROM dbo.Images) AS NumberedImages WHERE RowNum = @StartRow";
-
-                using (SqlCommand command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@StartRow", startRow);
                     connection.Open();
-                    return command.ExecuteScalar()?.ToString();
+
+                    string query = "SELECT Ans FROM dbo.TopicAns WHERE questionID = @QuestionID";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@QuestionID", questionID);
+
+                        // 使用 ExecuteScalar 來取得單一值（這裡是 Ans）
+                        object result = command.ExecuteScalar();
+                        return result.ToString();
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                // 適當地處理例外，例如記錄錯誤、顯示錯誤訊息等
+                return "發生錯誤：" + ex.Message;
             }
         }
 
-        private string GetDetailedExplanation()
+        private void TakeDetailedExplanationImageandtext(string questionID)
         {
-            int currentPage = (int)ViewState["CurrentPage"];
-            int startRow = (currentPage - 1) * itemsPerPage + 1;
-
-            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            try
             {
-                string query = "SELECT Detailedexplanation FROM (SELECT Detailedexplanation, ROW_NUMBER() OVER (ORDER BY ImageID) AS RowNum FROM dbo.Images) AS NumberedImages WHERE RowNum = @StartRow";
-
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    command.Parameters.AddWithValue("@StartRow", startRow);
                     connection.Open();
-                    return command.ExecuteScalar()?.ToString();
+
+                    // 使用参数化查询以防止SQL注入
+                    string query = "SELECT DetailedExplanationImage, DetailedExplanationText FROM dbo.TopicAns WHERE questionID = @QuestionID";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        // 添加参数
+                        command.Parameters.AddWithValue("@QuestionID", questionID);
+
+                        // 执行查询
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                // 取得二進位圖片資料
+                                byte[] detailedExplanationImageData = (byte[])reader["DetailedExplanationImage"];
+
+                                // 轉換二進位圖片資料為 Base64 字串
+                                string detailedExplanationImageBase64 = Convert.ToBase64String(detailedExplanationImageData);
+                                imgTopic.ImageUrl = "data:image/jpeg;base64," + detailedExplanationImageBase64;
+
+                                // 取得文字描述
+                                string detailedExplanationText = reader["DetailedExplanationText"].ToString();
+                                detailedexplanationtext.InnerText = detailedExplanationText;
+
+                                // 在這裡你可以使用這些值，例如，將它們設置給後端的變數或進行其他處理
+                                Debug.WriteLine($"DetailedExplanationText: {detailedExplanationText}");
+
+                                // 將圖片 Base64 字串傳遞到前端，這樣你可以在前端使用它
+                                Page.ClientScript.RegisterStartupScript(this.GetType(), "ShowImage", $"showImage('{detailedExplanationImageBase64}');", true);
+                            }
+                            else
+                            {
+                                Debug.WriteLine("No matching record found.");
+                            }
+                        }
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Error: " + ex.Message);
+                // 处理异常
+            }
+        }
+
+
+        protected void CheckinputAns_Click(object sender, EventArgs e)
+        {
+            string inputans = inputAns.Text;
+            string QuestionID = ViewState["QuestionID"] as string;
+            string ANS = TakeAns(QuestionID);
+            if (ANS == inputans)
+            {
+                string script = "alert('答案正確');";
+                ClientScript.RegisterStartupScript(this.GetType(), "ShowMessage", script, true);
+                int currentIndex = (int)ViewState["QuestionIndex"];
+
+                // 更新索引
+                currentIndex++;
+
+                // 更新 ViewState
+                ViewState["QuestionIndex"] = currentIndex;
+                detailedexplanationtext.InnerText = "";
+                // 獲取下一題
+                TakeQuestion();
+            }
+            else
+            {
+                string script = "alert('答案錯誤');";
+                ClientScript.RegisterStartupScript(this.GetType(), "ShowMessage", script, true);
+                TakeDetailedExplanationImageandtext(QuestionID);
             }
         }
     }

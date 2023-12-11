@@ -22,40 +22,49 @@ namespace learningEX {
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
         
         /// <summary>
-        /// GridViewImages 控制項。
+        /// imgTopic 控制項。
         /// </summary>
         /// <remarks>
         /// 自動產生的欄位。
         /// 若要修改，請將欄位宣告從設計工具檔案移到程式碼後置檔案。
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView GridViewImages;
+        protected global::System.Web.UI.WebControls.Image imgTopic;
         
         /// <summary>
-        /// Text 控制項。
+        /// questiondata 控制項。
         /// </summary>
         /// <remarks>
         /// 自動產生的欄位。
         /// 若要修改，請將欄位宣告從設計工具檔案移到程式碼後置檔案。
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Text;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl questiondata;
         
         /// <summary>
-        /// detailedexplanation 控制項。
+        /// detailedexplanationtext 控制項。
         /// </summary>
         /// <remarks>
         /// 自動產生的欄位。
         /// 若要修改，請將欄位宣告從設計工具檔案移到程式碼後置檔案。
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl detailedexplanation;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl detailedexplanationtext;
         
         /// <summary>
-        /// btnDetectInput 控制項。
+        /// inputAns 控制項。
         /// </summary>
         /// <remarks>
         /// 自動產生的欄位。
         /// 若要修改，請將欄位宣告從設計工具檔案移到程式碼後置檔案。
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnDetectInput;
+        protected global::System.Web.UI.WebControls.TextBox inputAns;
+        
+        /// <summary>
+        /// checkinputAns 控制項。
+        /// </summary>
+        /// <remarks>
+        /// 自動產生的欄位。
+        /// 若要修改，請將欄位宣告從設計工具檔案移到程式碼後置檔案。
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button checkinputAns;
         
         /// <summary>
         /// btnPrev 控制項。

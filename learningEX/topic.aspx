@@ -130,30 +130,19 @@
     <form id="form1" runat="server">
         <div class="container">
             <div class="Image-container">
-                <asp:GridView ID="GridViewImages" runat="server" AutoGenerateColumns="False" ShowHeader="False">
-                    <Columns>
-                        <asp:TemplateField>
-                            <ItemTemplate>
-                                <asp:Label ID="lblDatatext" runat="server" Text='<%# Eval("datatext") %>' Visible="false"></asp:Label>
-                                <asp:Image ID="imgPhoto" runat="server" ImageUrl='<%#  GetImageURL(Eval("Image")) %>' CssClass="thumbnail" />
-                            </ItemTemplate>
-                        </asp:TemplateField>
-                    </Columns>
-                </asp:GridView>
+                <asp:Image ID="imgTopic" runat="server" />
             </div>
-
 
             <div class="datatextbutton-container">
                 <div class="data-container">
-                    <div id="Text" runat="server" class="data"></div>
+                    <div id="questiondata" runat="server" class="data"></div>
+                    <div id="detailedexplanationtext" runat="server" class="detailedexplanation"></div>
                 </div>
-                <div class="detailedexplanation-container">
-                    <div id="detailedexplanation" runat="server" class="detailedexplanation"></div>
-                </div>
+
                 <div class="inputandcheckbutton-container">
                     <div class="input-container">
-                        <input name="inputdata" type="text" class="text-input" placeholder="輸入答案：" />
-                        <asp:Button ID="btnDetectInput" runat="server" Text="Check" OnClick="DetectInput_Click" CssClass="button-input" />
+                       <asp:TextBox runat="server" ID="inputAns" CssClass="text-input" placeholder="輸入答案：" />
+                        <asp:Button ID="checkinputAns" runat="server" Text="Check" OnClick="CheckinputAns_Click" CssClass="button-input" />
                     </div>
 
                 </div>
