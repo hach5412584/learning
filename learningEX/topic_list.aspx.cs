@@ -41,9 +41,9 @@ namespace learningEX
                 connection.Open();
 
                 // 使用參數化查詢以防 SQL 注入
-                string query = "SELECT QuestionType, QuestionName FROM Image WHERE QuestionType = @QuestionType";
+                string query = "SELECT Topictype, Topicname FROM TopicNum WHERE Topictype = @Topictype";
                 SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@QuestionType", questionType);
+                command.Parameters.AddWithValue("@Topictype", questionType);
 
                 SqlDataAdapter adapter = new SqlDataAdapter(command);
                 adapter.Fill(dtQuestions);

@@ -149,7 +149,8 @@
                 <div class="button-container">
                     <input type="button" id="btnPrev" runat="server" value="上一頁" onserverclick="btnPrev_Click" />
                     <div id="pageload" runat="server"></div>
-                    <input type="button" id="btnNext" runat="server" value="下一頁" onserverclick="btnNext_Click" />
+                    <input type="button" id="btnNext" runat="server" value="下一頁" onserverclick="btnNext_Click" /><br>
+                    <asp:Label ID="lblOverallAccuracy" runat="server" Text=""></asp:Label>
                 </div>
             </div>
         </div>

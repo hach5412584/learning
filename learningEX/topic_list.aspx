@@ -12,8 +12,14 @@
         <div>
             <asp:GridView ID="gvQuestions" runat="server" AutoGenerateColumns="False">
                 <Columns>
-                    <asp:BoundField DataField="QuestionName" HeaderText="題目名稱" SortExpression="QuestionName" />
-                    <asp:BoundField DataField="QuestionType" HeaderText="題目類型" SortExpression="QuestionType" />
+                    <asp:TemplateField HeaderText="題目名稱">
+                        <ItemTemplate>
+                            <a href='<%# "topic.aspx?topicname=" + Eval("Topicname") + "&topictype=" + Eval("Topictype") %>'>
+                                <asp:Label ID="lblTopicName" runat="server" Text='<%# Eval("Topicname") %>'></asp:Label>
+                            </a>
+                        </ItemTemplate>
+                    </asp:TemplateField>
+                    <asp:BoundField DataField="Topictype" HeaderText="題目類型" SortExpression="Topictype" />
                 </Columns>
             </asp:GridView>
         </div>

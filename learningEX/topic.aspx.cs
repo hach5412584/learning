@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Linq;
 using System.Web.UI.WebControls;
 
 namespace learningEX
@@ -8,8 +10,8 @@ namespace learningEX
     public partial class topic : System.Web.UI.Page
     {
         string ConnectionString = "Data Source=DESKTOP-VLAJAD1;Initial Catalog=TopicDatabase;User Id=test;Password=;";
-        string topicname = "BranchandBound";
-        string topictype = "Algorithm";
+        string topicname = "NULL";
+        string topictype = "NULL";
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -17,6 +19,9 @@ namespace learningEX
             {
                 // 初始化 ViewState["QuestionIndex"]，表示當前題目的索引
                 ViewState["QuestionIndex"] = 0;
+                ViewState["QuestionResults"] = new Dictionary<string, bool>(); // 初始化題目正確與否的 Dictionary
+                topicname = Request.QueryString["topicname"];
+                topictype = Request.QueryString["topictype"];
                 TakeQuestion();
             }
         }
@@ -315,6 +320,8 @@ namespace learningEX
                 ClientScript.RegisterStartupScript(this.GetType(), "ShowMessage", script, true);
                 int currentIndex = (int)ViewState["QuestionIndex"];
 
+                Dictionary<string, bool> questionResults = ViewState["QuestionResults"] as Dictionary<string, bool>;
+                questionResults[QuestionID] = true;
                 // 更新索引
                 currentIndex++;
 
@@ -327,8 +334,38 @@ namespace learningEX
             else
             {
                 string script = "alert('答案錯誤');";
+                Dictionary<string, bool> questionResults = ViewState["QuestionResults"] as Dictionary<string, bool>;
+                questionResults[QuestionID] = false;
                 ClientScript.RegisterStartupScript(this.GetType(), "ShowMessage", script, true);
                 TakeDetailedExplanationImageandtext(QuestionID);
+            }
+            UpdateOverallAccuracy();
+        }
+
+        private void UpdateOverallAccuracy()
+        {
+            if (ViewState["QuestionResults"] is Dictionary<string, bool> questionResults)
+            {
+                if (questionResults.Count > 0)
+                {
+                    int correctCount = questionResults.Count(kvp => kvp.Value);
+                    int totalCount = questionResults.Count;
+
+                    double overallAccuracy = (double)correctCount / totalCount * 100;
+
+                    // 更新整體題組的正確率，你可以將其顯示在頁面上或進一步處理
+                    lblOverallAccuracy.Text = $"整體正確率：{overallAccuracy}%";
+                }
+                else
+                {
+                    // 沒有結果時的處理邏輯
+                    lblOverallAccuracy.Text = "沒有結果";
+                }
+            }
+            else
+            {
+                // 無法取得 QuestionResults 時的處理邏輯
+                lblOverallAccuracy.Text = "無法取得結果";
             }
         }
     }
