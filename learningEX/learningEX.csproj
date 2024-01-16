@@ -70,6 +70,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ans_list.aspx" />
     <Content Include="css\bootstrap.css" />
     <Content Include="css\signin.css" />
     <Content Include="learning_map.aspx" />
@@ -86,6 +87,13 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ans_list.aspx.cs">
+      <DependentUpon>ans_list.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ans_list.aspx.designer.cs">
+      <DependentUpon>ans_list.aspx</DependentUpon>
+    </Compile>
     <Compile Include="learning_map.aspx.cs">
       <DependentUpon>learning_map.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

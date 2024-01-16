@@ -25,7 +25,6 @@ namespace learningEX
                 TakeQuestion();
             }
         }
-
         // 定義 TakeID 方法
         private void TakeID()
         {
@@ -69,7 +68,6 @@ namespace learningEX
                 // 处理异常
             }
         }
-
 
         private void TakeQuestion()
         {
@@ -155,8 +153,6 @@ namespace learningEX
             }
         }
 
-
-
         protected void btnNext_Click(object sender, EventArgs e)
         {
             // 獲取當前索引
@@ -164,6 +160,7 @@ namespace learningEX
             int totalPages = GetTotalQuestions();
             if (currentIndex + 1 < totalPages)
             {
+                /*
                 // 更新索引
                 currentIndex++;
 
@@ -172,8 +169,66 @@ namespace learningEX
                 detailedexplanationtext.InnerText = "";
                 // 獲取下一題
                 TakeQuestion();
-            }
+                */
 
+                // 取得當前題目的相關信息
+                string questionID = ViewState["QuestionID"] as string;
+                string inputAnswer = inputAns.Text;  // 假設這是用戶輸入的答案
+                string correctAnswer = TakeAns(questionID);  // 假設這是正確的答案
+                string isCorrect="NULL";
+                // 判斷答案是否正確
+                if (inputAnswer == correctAnswer)
+                {
+                    isCorrect = "答對";
+                }
+                else
+                {
+                    isCorrect = "答錯";
+                }
+                // 將答案相關信息存入 Session
+                SaveAnswerInfoToSession(questionID, isCorrect);
+
+                ViewState["QuestionIndex"] = ++currentIndex;
+                detailedexplanationtext.InnerText = "";
+
+                TakeQuestion();
+            }
+            else
+            {
+                string questionID = ViewState["QuestionID"] as string;
+                string inputAnswer = inputAns.Text;  // 假設這是用戶輸入的答案
+                string correctAnswer = TakeAns(questionID);  // 假設這是正確的答案
+                string isCorrect = "NULL";
+                // 判斷答案是否正確
+                if (inputAnswer == correctAnswer)
+                {
+                    isCorrect = "答對";
+                }
+                else
+                {
+                    isCorrect = "答錯";
+                }
+                // 將答案相關信息存入 Session
+                SaveAnswerInfoToSession(questionID, isCorrect);
+
+                Response.Redirect("~/ans_list.aspx");
+            }
+        }
+        private void SaveAnswerInfoToSession(string questionID, string content)
+        {
+            // 從 Session 中獲取 AnswerResults 字典，如果不存在則創建一個新的
+            Dictionary<string, string> answerResults = Session["AnswerResults"] as Dictionary<string, string>;
+
+            if (answerResults == null)
+            {
+                answerResults = new Dictionary<string, string>();
+            }
+            
+            // 更新或添加當前題的答案結果
+            answerResults[questionID] = content;
+
+            // 將更新後的字典存回 Session
+            Session["AnswerResults"] = answerResults;
         }
 
         protected void btnPrev_Click(object sender, EventArgs e)
@@ -182,17 +237,15 @@ namespace learningEX
             // 獲取當前索引
             if (currentIndex > 0)
             {
-                currentIndex--;
 
                 // 更新 ViewState
-                ViewState["QuestionIndex"] = currentIndex;
+                ViewState["QuestionIndex"] = --currentIndex;
                 detailedexplanationtext.InnerText = "";
+
                 // 獲取上一題
                 TakeQuestion();
             }
         }
-
-
         private void TakeImage(string topicID, string imageID)
         {
             try
@@ -254,7 +307,8 @@ namespace learningEX
                 return "發生錯誤：" + ex.Message;
             }
         }
-
+        //目前用不到
+        /*
         private void TakeDetailedExplanationImageandtext(string questionID)
         {
             try
@@ -307,20 +361,19 @@ namespace learningEX
                 // 处理异常
             }
         }
-
-
         protected void CheckinputAns_Click(object sender, EventArgs e)
         {
+            Dictionary<string, bool> questionResults = ViewState["QuestionResults"] as Dictionary<string, bool>;
             string inputans = inputAns.Text;
             string QuestionID = ViewState["QuestionID"] as string;
             string ANS = TakeAns(QuestionID);
+            string resultString = "NULL";
             if (ANS == inputans)
             {
                 string script = "alert('答案正確');";
                 ClientScript.RegisterStartupScript(this.GetType(), "ShowMessage", script, true);
                 int currentIndex = (int)ViewState["QuestionIndex"];
 
-                Dictionary<string, bool> questionResults = ViewState["QuestionResults"] as Dictionary<string, bool>;
                 questionResults[QuestionID] = true;
                 // 更新索引
                 currentIndex++;
@@ -334,14 +387,28 @@ namespace learningEX
             else
             {
                 string script = "alert('答案錯誤');";
-                Dictionary<string, bool> questionResults = ViewState["QuestionResults"] as Dictionary<string, bool>;
                 questionResults[QuestionID] = false;
                 ClientScript.RegisterStartupScript(this.GetType(), "ShowMessage", script, true);
-                TakeDetailedExplanationImageandtext(QuestionID);
+                //TakeDetailedExplanationImageandtext(QuestionID);
+                TakeQuestion();
+            }
+            if (questionResults != null && questionResults.ContainsKey(QuestionID))
+            {
+                bool result = questionResults[QuestionID];
+
+                // 將布林值轉換為對應的字串
+                resultString = result ? "正確" : "錯誤";
+
+                // 使用 resultString 進行後續處理，例如顯示在頁面上或執行其他邏輯
+                Console.WriteLine($"Question {QuestionID} 的結果為：{resultString}");
+            }
+            else
+            {
+                // 處理字典為 null 或者不包含指定 QuestionID 的情況
+                Console.WriteLine($"找不到 QuestionID 為 {QuestionID} 的結果");
             }
             UpdateOverallAccuracy();
         }
-
         private void UpdateOverallAccuracy()
         {
             if (ViewState["QuestionResults"] is Dictionary<string, bool> questionResults)
@@ -368,5 +435,6 @@ namespace learningEX
                 lblOverallAccuracy.Text = "無法取得結果";
             }
         }
+        */
     }
 }

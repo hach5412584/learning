@@ -141,8 +141,7 @@
 
                 <div class="inputandcheckbutton-container">
                     <div class="input-container">
-                       <asp:TextBox runat="server" ID="inputAns" CssClass="text-input" placeholder="輸入答案：" />
-                        <asp:Button ID="checkinputAns" runat="server" Text="Check" OnClick="CheckinputAns_Click" CssClass="button-input" />
+                        <asp:TextBox runat="server" ID="inputAns" CssClass="text-input" placeholder="輸入答案：" />
                     </div>
 
                 </div>

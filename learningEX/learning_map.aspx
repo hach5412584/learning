@@ -34,20 +34,18 @@
                         <a class="nav-link" href="learning_map.aspx">學習地圖</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" id="topicDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">題目
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="topic_list.aspx?questionType=Algorithm">演算法</a></li>
-                            <li><a class="dropdown-item" href="topic_list.aspx?questionType=Image recognition">影像辨識</a></li>
-                        </ul>
+                        <a class="nav-link dropdown-toggle" id="topicDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">題目</a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="topic_list.aspx?questionType=Algorithm">演算法</a></li>
+                                <li><a class="dropdown-item" href="topic_list.aspx?questionType=Image recognition">影像辨識</a></li>
+                            </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">自動出題
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">演算法</a></li>
-                            <li><a class="dropdown-item" href="#">影像辨識</a></li>
-                        </ul>
+                        <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">自動出題</a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="#">演算法類型</a></li>
+                                <li><a class="dropdown-item" href="#">影像辨識類型</a></li>
+                            </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="logout.aspx">登出</a>
