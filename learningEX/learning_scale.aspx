@@ -127,6 +127,7 @@
                         alert("反饋已提交！");
                         // 清除表單
                         $("#feedbackForm")[0].reset();
+                        window.location.href = 'learning_map.aspx';
                     },
                     error: function (error) {
                         alert("發生錯誤：" + error.responseText);

@@ -24,6 +24,11 @@
                     </asp:TemplateField>
                 </Columns>
             </asp:GridView>
+
+            <div class="text-center mt-3">
+                <asp:Button ID="btnGoToSurvey" runat="server" CssClass="btn btn-primary" Text="前往學習問卷" OnClientClick="window.location.href='learning_scale.aspx'; return false;" />
+            </div>
+
         </div>
     </form>
 </body>
