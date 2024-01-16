@@ -8,9 +8,9 @@ namespace learningEX
     public partial class topic : System.Web.UI.Page
     {
         string ConnectionString = "Data Source=DESKTOP-VLAJAD1;Initial Catalog=TopicDatabase;User Id=test;Password=;";
-        string topicname = "BranchandBound";
+        string topicname = "BranchandBound1";
         string topictype = "Algorithm";
-
+        int totalPages;
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -78,7 +78,7 @@ namespace learningEX
                     int pageSize = 1; // 每頁顯示的題目數量
                     // 獲取當前頁碼
                     int currentPage = (int)ViewState["QuestionIndex"];
-                    int totalPages = GetTotalQuestions();
+                    totalPages = GetTotalQuestions();
                     pageload.InnerText = $"{currentPage + 1}/{totalPages}";
                     // 計算分頁的 OFFSET
                     int offset = currentPage * pageSize;
@@ -165,8 +165,13 @@ namespace learningEX
                 // 更新 ViewState
                 ViewState["QuestionIndex"] = currentIndex;
                 detailedexplanationtext.InnerText = "";
+                CheckbuttonOpen();
                 // 獲取下一題
                 TakeQuestion();
+            }
+            else
+            {
+
             }
 
         }
@@ -182,6 +187,7 @@ namespace learningEX
                 // 更新 ViewState
                 ViewState["QuestionIndex"] = currentIndex;
                 detailedexplanationtext.InnerText = "";
+                CheckbuttonOpen();
                 // 獲取上一題
                 TakeQuestion();
             }
@@ -287,6 +293,8 @@ namespace learningEX
 
                                 // 將圖片 Base64 字串傳遞到前端，這樣你可以在前端使用它
                                 Page.ClientScript.RegisterStartupScript(this.GetType(), "ShowImage", $"showImage('{detailedExplanationImageBase64}');", true);
+
+                                CheckbuttonClose();
                             }
                             else
                             {
@@ -310,19 +318,30 @@ namespace learningEX
             string QuestionID = ViewState["QuestionID"] as string;
             string ANS = TakeAns(QuestionID);
             if (ANS == inputans)
-            {
-                string script = "alert('答案正確');";
-                ClientScript.RegisterStartupScript(this.GetType(), "ShowMessage", script, true);
+            {              
                 int currentIndex = (int)ViewState["QuestionIndex"];
 
-                // 更新索引
-                currentIndex++;
+                if (currentIndex < totalPages)
+                {
+                    string script = "alert('答案正確');";
+                    ClientScript.RegisterStartupScript(this.GetType(), "ShowMessage", script, true);
 
-                // 更新 ViewState
-                ViewState["QuestionIndex"] = currentIndex;
-                detailedexplanationtext.InnerText = "";
-                // 獲取下一題
-                TakeQuestion();
+                    // 更新索引
+                    currentIndex++;
+                    // 更新 ViewState
+                    ViewState["QuestionIndex"] = currentIndex;
+                    detailedexplanationtext.InnerText = "";
+
+                    // 獲取下一題
+                    TakeQuestion();
+                }
+                else
+                {
+                    string script = "alert('答案正確，您已經完成所有題目請查看分數。');";
+                    ClientScript.RegisterStartupScript(this.GetType(), "ShowMessage", script, true);
+                    Pagehome();
+                }
+               
             }
             else
             {
@@ -331,5 +350,23 @@ namespace learningEX
                 TakeDetailedExplanationImageandtext(QuestionID);
             }
         }
+
+        private void Pagehome()
+        {
+            Response.Redirect("learning_map.aspx");
+        }
+
+        private void CheckbuttonClose()
+        {
+            inputAns.Visible = false;
+            checkinputAns.Visible = false;
+        }
+
+        private void CheckbuttonOpen()
+        {
+            inputAns.Visible = true;
+            checkinputAns.Visible = true;
+        }
+
     }
 }
