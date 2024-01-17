@@ -73,6 +73,7 @@
     <Content Include="ans_list.aspx" />
     <Content Include="css\bootstrap.css" />
     <Content Include="css\signin.css" />
+    <Content Include="DetailedExplanation.aspx" />
     <Content Include="learning_map.aspx" />
     <Content Include="learning_scale.aspx" />
     <Content Include="login.aspx" />
@@ -93,6 +94,13 @@
     </Compile>
     <Compile Include="ans_list.aspx.designer.cs">
       <DependentUpon>ans_list.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="DetailedExplanation.aspx.cs">
+      <DependentUpon>DetailedExplanation.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="DetailedExplanation.aspx.designer.cs">
+      <DependentUpon>DetailedExplanation.aspx</DependentUpon>
     </Compile>
     <Compile Include="learning_map.aspx.cs">
       <DependentUpon>learning_map.aspx</DependentUpon>
