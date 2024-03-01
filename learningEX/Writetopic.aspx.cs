@@ -4,6 +4,8 @@ using System.Web.UI.WebControls; // 添加使用TextBox控件的命名空间
 using System.Linq; // 添加 Linq 命名空間
 using System.Web.UI;
 using System.Data.SqlClient;
+using System.Web;
+using Newtonsoft.Json;
 
 namespace learningEX
 {
@@ -24,6 +26,7 @@ namespace learningEX
         string node3 = "";       
         string topicgroupid = "";
         int weightans = 0;
+        string topicUrl = "";
         // 定義物品類別
         class Item
         {
@@ -50,7 +53,11 @@ namespace learningEX
             {
                 AddItemInput(i + 1); // 生成第 i 个物品的输入框
             }
-
+            if (Session["TopicUrl"] != null)
+            {
+                // 取得 Session 中存儲的 URL
+                topicUrl = Session["TopicUrl"].ToString();
+            }
         }
        
         private void GetItemsFromTextBoxes()
@@ -128,7 +135,31 @@ namespace learningEX
                 Response.Write($"[{node[0]}, {node[1]}, {node[2]}] ");
             }
             node2 = string.Join(",", allNodes[1].ToArray());
-            checkTopicGroupID();
+
+            var question = new Dictionary<string, object>();
+            question["question1"] = itemCount;
+            question["question2"] = capacity;
+
+            string questionJson = JsonConvert.SerializeObject(question);
+
+            HttpCookie questionCookie = new HttpCookie("Question", questionJson);
+            Response.Cookies.Add(questionCookie);
+
+            var answers = new Dictionary<string, object>();
+            answers["answer1"] = sort;
+            answers["answer2"] = node1;
+            answers["answer3"] = node2;
+            answers["answer4"] = node3;
+            answers["answer5"] = (maxProfit.ToString() + "," + weightans.ToString());
+            answers["answer6"] = shortcut.ToString();
+            
+
+            string answersJson = JsonConvert.SerializeObject(answers);
+
+            HttpCookie answersCookie = new HttpCookie("Answers", answersJson);
+            Response.Cookies.Add(answersCookie);
+            Response.Redirect(topicUrl);
+            //checkTopicGroupID();
         }
        
         private void checkTopicGroupID()
@@ -175,15 +206,16 @@ namespace learningEX
         private void SQL()
         {
            
-            for (int i = 1; i <= 6; i++)
+            for (int i = 1; i <= 7; i++)
             {
                
                 string ans="" ;
-                if (i == 1) { ans = sort; }
+                if (i==1) { ans = sort; }
                 else if (i == 2) { ans = node1; }
                 else if (i == 3) { ans = node2; }
                 else if (i == 4) { ans = node3; }
-                else if (i == 5) { ans = maxProfit.ToString() + "," + weightans.ToString();}
+                else if (i == 5) { ans = maxProfit.ToString(); }
+                else if (i == 6) { ans = weightans.ToString(); }
                 else { ans = shortcut.ToString(); }
 
                 InsertData(userid, id, topicgroupid, i, ans);

@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
+using System.Web;
 using System.Web.UI.WebControls;
 
 namespace learningEX
@@ -12,17 +14,49 @@ namespace learningEX
         string ConnectionString = "Data Source=DESKTOP-VLAJAD1;Initial Catalog=TopicDatabase;User Id=test;Password=;";
         string topicname = "NULL";
         string topictype = "NULL";
-
+        string ans_string = "NULL";
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                // 初始化 ViewState["QuestionIndex"]，表示當前題目的索引
+                //初始化 ViewState["QuestionIndex"]，表示當前題目的索引
+                Session["TopicUrl"] = Request.Url.ToString();
                 ViewState["QuestionIndex"] = 0;
                 ViewState["QuestionResults"] = new Dictionary<string, bool>(); // 初始化題目正確與否的 Dictionary
                 topicname = Request.QueryString["topicname"];
                 topictype = Request.QueryString["topictype"];
                 TakeQuestion();
+
+                if (Request.Cookies["Answers"] != null && Request.Cookies["Question"] != null)
+                {
+                    ans_string = "";
+                    string answersJson = Request.Cookies["Answers"].Value;
+                    string questionJson = Request.Cookies["Question"].Value;
+                    // 將 JSON 字符串反序列化為答案對象或字典
+                    var answers = JsonConvert.DeserializeObject<Dictionary<string, object>>(answersJson);
+                    var question = JsonConvert.DeserializeObject<Dictionary<string, object>>(questionJson);
+                    List<string> answers_string = new List<string>();
+                    foreach (var kvp in answers)
+                    {
+                        string key = kvp.Key;  // 獲取字典中的鍵
+                        object value = kvp.Value;  // 獲取字典中的值
+
+                        // 根據您的需要，對值進行類型轉換或操作
+                        if (value != null)
+                        {
+                            answers_string.Add((string)value);
+                        }
+                    }
+                    Session["AnswersString"] = answers_string;
+                    //for test
+                    foreach (var str in answers_string)
+                    {
+                        ans_string += str + "\n";
+                    }
+                    Label1.Text = ans_string;
+                    //for test
+
+                }
             }
         }
         // 定義 TakeID 方法
@@ -81,6 +115,7 @@ namespace learningEX
                     int pageSize = 1; // 每頁顯示的題目數量
                     // 獲取當前頁碼
                     int currentPage = (int)ViewState["QuestionIndex"];
+                    Session["currentPage"] = currentPage;
                     int totalPages = GetTotalQuestions();
                     pageload.InnerText = $"{currentPage + 1}/{totalPages}";
                     // 計算分頁的 OFFSET
@@ -196,8 +231,8 @@ namespace learningEX
             else
             {
                 string questionID = ViewState["QuestionID"] as string;
-                string inputAnswer = inputAns.Text;  // 假設這是用戶輸入的答案
-                string correctAnswer = TakeAns(questionID);  // 假設這是正確的答案
+                string inputAnswer = inputAns.Text;  // 用戶輸入的答案
+                string correctAnswer = TakeAns(questionID);  // 正確的答案
                 string isCorrect = "NULL";
                 // 判斷答案是否正確
                 if (inputAnswer == correctAnswer)
@@ -286,20 +321,29 @@ namespace learningEX
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(ConnectionString))
+                if (Request.Cookies["Answers"] != null && Request.Cookies["Question"] != null)
                 {
-                    connection.Open();
-
-                    string query = "SELECT Ans FROM dbo.TopicAns WHERE questionID = @QuestionID";
-                    using (SqlCommand command = new SqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@QuestionID", questionID);
-
-                        // 使用 ExecuteScalar 來取得單一值（這裡是 Ans）
-                        object result = command.ExecuteScalar();
-                        return result.ToString();
-                    }
+                    List<string> answers_string = Session["AnswersString"] as List<string>;
+                    int currentPage = Convert.ToInt32(Session["currentPage"]);
+                    return answers_string[currentPage];
                 }
+                else
+                {
+                    using (SqlConnection connection = new SqlConnection(ConnectionString))
+                    {
+                        connection.Open();
+
+                        string query = "SELECT Ans FROM dbo.TopicAns WHERE questionID = @QuestionID";
+                        using (SqlCommand command = new SqlCommand(query, connection))
+                        {
+                            command.Parameters.AddWithValue("@QuestionID", questionID);
+
+                            // 使用 ExecuteScalar 來取得單一值（這裡是 Ans）
+                            object result = command.ExecuteScalar();
+                            return result.ToString();
+                        }
+                    }
+                } 
             }
             catch (Exception ex)
             {
@@ -307,134 +351,151 @@ namespace learningEX
                 return "發生錯誤：" + ex.Message;
             }
         }
-        //目前用不到
-        /*
-        private void TakeDetailedExplanationImageandtext(string questionID)
+
+        protected void ChangeTopic_Click(object sender, EventArgs e)
         {
-            try
+            string cookieName_ans = "Answers";
+            string cookieName_qus = "Question";
+
+            HttpCookie Cookie_ans = new HttpCookie(cookieName_ans);
+            HttpCookie Cookie_qus = new HttpCookie(cookieName_qus);
+            Cookie_ans.Expires = DateTime.Now.AddDays(-1);
+            Cookie_qus.Expires = DateTime.Now.AddDays(-1);
+
+            // 將 Cookie 加入到響應中，使其失效
+            Response.Cookies.Add(Cookie_ans);
+            Response.Cookies.Add(Cookie_qus);
+
+            Response.Redirect("InputItem.aspx");
+        }
+            //目前用不到
+            /*
+            private void TakeDetailedExplanationImageandtext(string questionID)
             {
-                using (SqlConnection connection = new SqlConnection(ConnectionString))
+                try
                 {
-                    connection.Open();
-
-                    // 使用参数化查询以防止SQL注入
-                    string query = "SELECT DetailedExplanationImage, DetailedExplanationText FROM dbo.TopicAns WHERE questionID = @QuestionID";
-
-                    using (SqlCommand command = new SqlCommand(query, connection))
+                    using (SqlConnection connection = new SqlConnection(ConnectionString))
                     {
-                        // 添加参数
-                        command.Parameters.AddWithValue("@QuestionID", questionID);
+                        connection.Open();
 
-                        // 执行查询
-                        using (SqlDataReader reader = command.ExecuteReader())
+                        // 使用参数化查询以防止SQL注入
+                        string query = "SELECT DetailedExplanationImage, DetailedExplanationText FROM dbo.TopicAns WHERE questionID = @QuestionID";
+
+                        using (SqlCommand command = new SqlCommand(query, connection))
                         {
-                            if (reader.Read())
+                            // 添加参数
+                            command.Parameters.AddWithValue("@QuestionID", questionID);
+
+                            // 执行查询
+                            using (SqlDataReader reader = command.ExecuteReader())
                             {
-                                // 取得二進位圖片資料
-                                byte[] detailedExplanationImageData = (byte[])reader["DetailedExplanationImage"];
+                                if (reader.Read())
+                                {
+                                    // 取得二進位圖片資料
+                                    byte[] detailedExplanationImageData = (byte[])reader["DetailedExplanationImage"];
 
-                                // 轉換二進位圖片資料為 Base64 字串
-                                string detailedExplanationImageBase64 = Convert.ToBase64String(detailedExplanationImageData);
-                                imgTopic.ImageUrl = "data:image/jpeg;base64," + detailedExplanationImageBase64;
+                                    // 轉換二進位圖片資料為 Base64 字串
+                                    string detailedExplanationImageBase64 = Convert.ToBase64String(detailedExplanationImageData);
+                                    imgTopic.ImageUrl = "data:image/jpeg;base64," + detailedExplanationImageBase64;
 
-                                // 取得文字描述
-                                string detailedExplanationText = reader["DetailedExplanationText"].ToString();
-                                detailedexplanationtext.InnerText = detailedExplanationText;
+                                    // 取得文字描述
+                                    string detailedExplanationText = reader["DetailedExplanationText"].ToString();
+                                    detailedexplanationtext.InnerText = detailedExplanationText;
 
-                                // 在這裡你可以使用這些值，例如，將它們設置給後端的變數或進行其他處理
-                                Debug.WriteLine($"DetailedExplanationText: {detailedExplanationText}");
+                                    // 在這裡你可以使用這些值，例如，將它們設置給後端的變數或進行其他處理
+                                    Debug.WriteLine($"DetailedExplanationText: {detailedExplanationText}");
 
-                                // 將圖片 Base64 字串傳遞到前端，這樣你可以在前端使用它
-                                Page.ClientScript.RegisterStartupScript(this.GetType(), "ShowImage", $"showImage('{detailedExplanationImageBase64}');", true);
-                            }
-                            else
-                            {
-                                Debug.WriteLine("No matching record found.");
+                                    // 將圖片 Base64 字串傳遞到前端，這樣你可以在前端使用它
+                                    Page.ClientScript.RegisterStartupScript(this.GetType(), "ShowImage", $"showImage('{detailedExplanationImageBase64}');", true);
+                                }
+                                else
+                                {
+                                    Debug.WriteLine("No matching record found.");
+                                }
                             }
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Error: " + ex.Message);
-                // 处理异常
-            }
-        }
-        protected void CheckinputAns_Click(object sender, EventArgs e)
-        {
-            Dictionary<string, bool> questionResults = ViewState["QuestionResults"] as Dictionary<string, bool>;
-            string inputans = inputAns.Text;
-            string QuestionID = ViewState["QuestionID"] as string;
-            string ANS = TakeAns(QuestionID);
-            string resultString = "NULL";
-            if (ANS == inputans)
-            {
-                string script = "alert('答案正確');";
-                ClientScript.RegisterStartupScript(this.GetType(), "ShowMessage", script, true);
-                int currentIndex = (int)ViewState["QuestionIndex"];
-
-                questionResults[QuestionID] = true;
-                // 更新索引
-                currentIndex++;
-
-                // 更新 ViewState
-                ViewState["QuestionIndex"] = currentIndex;
-                detailedexplanationtext.InnerText = "";
-                // 獲取下一題
-                TakeQuestion();
-            }
-            else
-            {
-                string script = "alert('答案錯誤');";
-                questionResults[QuestionID] = false;
-                ClientScript.RegisterStartupScript(this.GetType(), "ShowMessage", script, true);
-                //TakeDetailedExplanationImageandtext(QuestionID);
-                TakeQuestion();
-            }
-            if (questionResults != null && questionResults.ContainsKey(QuestionID))
-            {
-                bool result = questionResults[QuestionID];
-
-                // 將布林值轉換為對應的字串
-                resultString = result ? "正確" : "錯誤";
-
-                // 使用 resultString 進行後續處理，例如顯示在頁面上或執行其他邏輯
-                Console.WriteLine($"Question {QuestionID} 的結果為：{resultString}");
-            }
-            else
-            {
-                // 處理字典為 null 或者不包含指定 QuestionID 的情況
-                Console.WriteLine($"找不到 QuestionID 為 {QuestionID} 的結果");
-            }
-            UpdateOverallAccuracy();
-        }
-        private void UpdateOverallAccuracy()
-        {
-            if (ViewState["QuestionResults"] is Dictionary<string, bool> questionResults)
-            {
-                if (questionResults.Count > 0)
+                catch (Exception ex)
                 {
-                    int correctCount = questionResults.Count(kvp => kvp.Value);
-                    int totalCount = questionResults.Count;
+                    Debug.WriteLine("Error: " + ex.Message);
+                    // 处理异常
+                }
+            }
+            protected void CheckinputAns_Click(object sender, EventArgs e)
+            {
+                Dictionary<string, bool> questionResults = ViewState["QuestionResults"] as Dictionary<string, bool>;
+                string inputans = inputAns.Text;
+                string QuestionID = ViewState["QuestionID"] as string;
+                string ANS = TakeAns(QuestionID);
+                string resultString = "NULL";
+                if (ANS == inputans)
+                {
+                    string script = "alert('答案正確');";
+                    ClientScript.RegisterStartupScript(this.GetType(), "ShowMessage", script, true);
+                    int currentIndex = (int)ViewState["QuestionIndex"];
 
-                    double overallAccuracy = (double)correctCount / totalCount * 100;
+                    questionResults[QuestionID] = true;
+                    // 更新索引
+                    currentIndex++;
 
-                    // 更新整體題組的正確率，你可以將其顯示在頁面上或進一步處理
-                    lblOverallAccuracy.Text = $"整體正確率：{overallAccuracy}%";
+                    // 更新 ViewState
+                    ViewState["QuestionIndex"] = currentIndex;
+                    detailedexplanationtext.InnerText = "";
+                    // 獲取下一題
+                    TakeQuestion();
                 }
                 else
                 {
-                    // 沒有結果時的處理邏輯
-                    lblOverallAccuracy.Text = "沒有結果";
+                    string script = "alert('答案錯誤');";
+                    questionResults[QuestionID] = false;
+                    ClientScript.RegisterStartupScript(this.GetType(), "ShowMessage", script, true);
+                    //TakeDetailedExplanationImageandtext(QuestionID);
+                    TakeQuestion();
+                }
+                if (questionResults != null && questionResults.ContainsKey(QuestionID))
+                {
+                    bool result = questionResults[QuestionID];
+
+                    // 將布林值轉換為對應的字串
+                    resultString = result ? "正確" : "錯誤";
+
+                    // 使用 resultString 進行後續處理，例如顯示在頁面上或執行其他邏輯
+                    Console.WriteLine($"Question {QuestionID} 的結果為：{resultString}");
+                }
+                else
+                {
+                    // 處理字典為 null 或者不包含指定 QuestionID 的情況
+                    Console.WriteLine($"找不到 QuestionID 為 {QuestionID} 的結果");
+                }
+                UpdateOverallAccuracy();
+            }
+            private void UpdateOverallAccuracy()
+            {
+                if (ViewState["QuestionResults"] is Dictionary<string, bool> questionResults)
+                {
+                    if (questionResults.Count > 0)
+                    {
+                        int correctCount = questionResults.Count(kvp => kvp.Value);
+                        int totalCount = questionResults.Count;
+
+                        double overallAccuracy = (double)correctCount / totalCount * 100;
+
+                        // 更新整體題組的正確率，你可以將其顯示在頁面上或進一步處理
+                        lblOverallAccuracy.Text = $"整體正確率：{overallAccuracy}%";
+                    }
+                    else
+                    {
+                        // 沒有結果時的處理邏輯
+                        lblOverallAccuracy.Text = "沒有結果";
+                    }
+                }
+                else
+                {
+                    // 無法取得 QuestionResults 時的處理邏輯
+                    lblOverallAccuracy.Text = "無法取得結果";
                 }
             }
-            else
-            {
-                // 無法取得 QuestionResults 時的處理邏輯
-                lblOverallAccuracy.Text = "無法取得結果";
-            }
+            */
         }
-        */
-    }
 }

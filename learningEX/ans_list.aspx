@@ -19,7 +19,7 @@
                     <asp:BoundField DataField="Result" HeaderText="是否正確" SortExpression="Result" />
                     <asp:TemplateField HeaderText="詳解">
                         <ItemTemplate>
-                            <asp:HyperLink ID="hlDetails" runat="server" Text="詳解" NavigateUrl='<%# $"topic_Detailed.aspx?questionID={Eval("QuestionID")}" %>' CssClass="btn btn-primary btn-sm"></asp:HyperLink>
+                            <asp:HyperLink ID="hlDetails" runat="server" Text="詳解" NavigateUrl='<%# $"DetailedExplanation.aspx?questionID={Eval("QuestionID")}" %>' CssClass="btn btn-primary btn-sm"></asp:HyperLink>
                         </ItemTemplate>
                     </asp:TemplateField>
                 </Columns>

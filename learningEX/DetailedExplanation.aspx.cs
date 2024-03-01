@@ -13,7 +13,7 @@ namespace learningEX
         {
             if (!IsPostBack)
             {
-                QuestionID = "1004";
+                QuestionID = Request.QueryString["questionID"];
                 TakeQuestion(QuestionID);
                 TakeDetailedExplanationImageandtext(QuestionID);
                 TakeAns(QuestionID);
