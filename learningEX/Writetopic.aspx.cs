@@ -4,6 +4,7 @@ using System.Web.UI.WebControls; // 添加使用TextBox控件的命名空间
 using System.Linq; // 添加 Linq 命名空間
 using System.Web.UI;
 using System.Data.SqlClient;
+using System.Web;
 
 namespace learningEX
 {
@@ -128,6 +129,19 @@ namespace learningEX
                 Response.Write($"[{node[0]}, {node[1]}, {node[2]}] ");
             }
             node2 = string.Join(",", allNodes[1].ToArray());
+
+            HttpCookie modifiedQuestionCookie = new HttpCookie("ModifiedQuestion", modifiedQuestion);
+
+            HttpCookie modifiedAnswerCookie_1 = new HttpCookie("ModifiedAnswer1", sort);
+            HttpCookie modifiedAnswerCookie_2 = new HttpCookie("ModifiedAnswer2", node1);
+            HttpCookie modifiedAnswerCookie_3 = new HttpCookie("ModifiedAnswer3", node2);
+            HttpCookie modifiedAnswerCookie_4 = new HttpCookie("ModifiedAnswer4", node3);
+            HttpCookie modifiedAnswerCookie_5 = new HttpCookie("ModifiedAnswer5", shortcut.ToString());
+            HttpCookie modifiedAnswerCookie_6 = new HttpCookie("ModifiedAnswer6", (maxProfit.ToString() + "," + weightans.ToString()));
+
+            Response.Cookies.Add(modifiedQuestionCookie);
+            Response.Cookies.Add(modifiedAnswerCookie);
+
             checkTopicGroupID();
         }
        
