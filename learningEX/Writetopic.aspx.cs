@@ -214,7 +214,7 @@ namespace learningEX
                 else if (i == 2) { ans = node1; }
                 else if (i == 3) { ans = node2; }
                 else if (i == 4) { ans = node3; }
-                else if (i == 5) { ans = maxProfit.ToString() + "," + weightans.ToString(); }
+                else if (i == 5) { ans = maxProfit.ToString() + ","  + weightans.ToString(); }
                 else { ans = shortcut.ToString(); }
 
                 InsertData(userid, id, topicgroupid, i, ans);
