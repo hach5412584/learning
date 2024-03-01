@@ -16,6 +16,8 @@ namespace learningEX
             Session.Remove("ItemCount");
             Session.Remove("Capacity");
             Session.Remove("topicUrl");
+            Session.Remove("AnswersString");
+            Session.Remove("currentPage");
             Response.Redirect("mainpage.aspx");
 
         }

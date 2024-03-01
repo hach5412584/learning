@@ -150,8 +150,9 @@ namespace learningEX
             answers["answer2"] = node1;
             answers["answer3"] = node2;
             answers["answer4"] = node3;
-            answers["answer5"] = shortcut.ToString();
-            answers["answer6"] = (maxProfit.ToString() + "," + weightans.ToString());
+            answers["answer5"] = (maxProfit.ToString() + "," + weightans.ToString());
+            answers["answer6"] = shortcut.ToString();
+            
 
             string answersJson = JsonConvert.SerializeObject(answers);
 

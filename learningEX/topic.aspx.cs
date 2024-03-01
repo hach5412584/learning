@@ -47,11 +47,15 @@ namespace learningEX
                             answers_string.Add((string)value);
                         }
                     }
+                    Session["AnswersString"] = answers_string;
+                    //for test
                     foreach (var str in answers_string)
                     {
                         ans_string += str + "\n";
                     }
                     Label1.Text = ans_string;
+                    //for test
+
                 }
             }
         }
@@ -111,6 +115,7 @@ namespace learningEX
                     int pageSize = 1; // 每頁顯示的題目數量
                     // 獲取當前頁碼
                     int currentPage = (int)ViewState["QuestionIndex"];
+                    Session["currentPage"] = currentPage;
                     int totalPages = GetTotalQuestions();
                     pageload.InnerText = $"{currentPage + 1}/{totalPages}";
                     // 計算分頁的 OFFSET
@@ -226,8 +231,8 @@ namespace learningEX
             else
             {
                 string questionID = ViewState["QuestionID"] as string;
-                string inputAnswer = inputAns.Text;  // 假設這是用戶輸入的答案
-                string correctAnswer = TakeAns(questionID);  // 假設這是正確的答案
+                string inputAnswer = inputAns.Text;  // 用戶輸入的答案
+                string correctAnswer = TakeAns(questionID);  // 正確的答案
                 string isCorrect = "NULL";
                 // 判斷答案是否正確
                 if (inputAnswer == correctAnswer)
@@ -316,20 +321,29 @@ namespace learningEX
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(ConnectionString))
+                if (Request.Cookies["Answers"] != null && Request.Cookies["Question"] != null)
                 {
-                    connection.Open();
-
-                    string query = "SELECT Ans FROM dbo.TopicAns WHERE questionID = @QuestionID";
-                    using (SqlCommand command = new SqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@QuestionID", questionID);
-
-                        // 使用 ExecuteScalar 來取得單一值（這裡是 Ans）
-                        object result = command.ExecuteScalar();
-                        return result.ToString();
-                    }
+                    List<string> answers_string = Session["AnswersString"] as List<string>;
+                    int currentPage = Convert.ToInt32(Session["currentPage"]);
+                    return answers_string[currentPage];
                 }
+                else
+                {
+                    using (SqlConnection connection = new SqlConnection(ConnectionString))
+                    {
+                        connection.Open();
+
+                        string query = "SELECT Ans FROM dbo.TopicAns WHERE questionID = @QuestionID";
+                        using (SqlCommand command = new SqlCommand(query, connection))
+                        {
+                            command.Parameters.AddWithValue("@QuestionID", questionID);
+
+                            // 使用 ExecuteScalar 來取得單一值（這裡是 Ans）
+                            object result = command.ExecuteScalar();
+                            return result.ToString();
+                        }
+                    }
+                } 
             }
             catch (Exception ex)
             {
