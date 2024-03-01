@@ -174,17 +174,15 @@ namespace learningEX
 
         private void SQL()
         {
-           
-            for (int i = 1; i <= 7; i++)
+
+            for (int i = 1; i <= 6; i++)
             {
-               
-                string ans="" ;
-                if (i==1) { ans = sort; }
+                string ans = "";
+                if (i == 1) { ans = sort; }
                 else if (i == 2) { ans = node1; }
                 else if (i == 3) { ans = node2; }
                 else if (i == 4) { ans = node3; }
-                else if (i == 5) { ans = maxProfit.ToString(); }
-                else if (i == 6) { ans = weightans.ToString(); }
+                else if (i == 5) { ans = maxProfit.ToString() + "," + weightans.ToString(); }
                 else { ans = shortcut.ToString(); }
 
                 InsertData(userid, id, topicgroupid, i, ans);
