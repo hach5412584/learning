@@ -151,6 +151,7 @@
                     <input type="button" id="btnNext" runat="server" value="下一頁" onserverclick="btnNext_Click" /><br>
                     <asp:Label ID="lblOverallAccuracy" runat="server" Text=""></asp:Label>
                     <input type="button" id="btnChangeTopic" runat="server" value="修改題目" onserverclick="ChangeTopic_Click"/>
+                    <asp:Label ID="Label1" runat="server" Text=""></asp:Label>
                 </div>
             </div>
         </div>

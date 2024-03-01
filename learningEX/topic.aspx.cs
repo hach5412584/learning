@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
+using System.Web;
 using System.Web.UI.WebControls;
 
 namespace learningEX
@@ -12,17 +14,45 @@ namespace learningEX
         string ConnectionString = "Data Source=DESKTOP-VLAJAD1;Initial Catalog=TopicDatabase;User Id=test;Password=;";
         string topicname = "NULL";
         string topictype = "NULL";
-
+        string ans_string = "NULL";
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                // 初始化 ViewState["QuestionIndex"]，表示當前題目的索引
+                //初始化 ViewState["QuestionIndex"]，表示當前題目的索引
+                Session["TopicUrl"] = Request.Url.ToString();
                 ViewState["QuestionIndex"] = 0;
                 ViewState["QuestionResults"] = new Dictionary<string, bool>(); // 初始化題目正確與否的 Dictionary
                 topicname = Request.QueryString["topicname"];
                 topictype = Request.QueryString["topictype"];
                 TakeQuestion();
+
+                if (Request.Cookies["Answers"] != null && Request.Cookies["Question"] != null)
+                {
+                    ans_string = "";
+                    string answersJson = Request.Cookies["Answers"].Value;
+                    string questionJson = Request.Cookies["Question"].Value;
+                    // 將 JSON 字符串反序列化為答案對象或字典
+                    var answers = JsonConvert.DeserializeObject<Dictionary<string, object>>(answersJson);
+                    var question = JsonConvert.DeserializeObject<Dictionary<string, object>>(questionJson);
+                    List<string> answers_string = new List<string>();
+                    foreach (var kvp in answers)
+                    {
+                        string key = kvp.Key;  // 獲取字典中的鍵
+                        object value = kvp.Value;  // 獲取字典中的值
+
+                        // 根據您的需要，對值進行類型轉換或操作
+                        if (value != null)
+                        {
+                            answers_string.Add((string)value);
+                        }
+                    }
+                    foreach (var str in answers_string)
+                    {
+                        ans_string += str + "\n";
+                    }
+                    Label1.Text = ans_string;
+                }
             }
         }
         // 定義 TakeID 方法
@@ -310,6 +340,18 @@ namespace learningEX
 
         protected void ChangeTopic_Click(object sender, EventArgs e)
         {
+            string cookieName_ans = "Answers";
+            string cookieName_qus = "Question";
+
+            HttpCookie Cookie_ans = new HttpCookie(cookieName_ans);
+            HttpCookie Cookie_qus = new HttpCookie(cookieName_qus);
+            Cookie_ans.Expires = DateTime.Now.AddDays(-1);
+            Cookie_qus.Expires = DateTime.Now.AddDays(-1);
+
+            // 將 Cookie 加入到響應中，使其失效
+            Response.Cookies.Add(Cookie_ans);
+            Response.Cookies.Add(Cookie_qus);
+
             Response.Redirect("InputItem.aspx");
         }
             //目前用不到

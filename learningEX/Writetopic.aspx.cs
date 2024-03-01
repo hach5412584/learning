@@ -5,6 +5,7 @@ using System.Linq; // 添加 Linq 命名空間
 using System.Web.UI;
 using System.Data.SqlClient;
 using System.Web;
+using Newtonsoft.Json;
 
 namespace learningEX
 {
@@ -25,6 +26,7 @@ namespace learningEX
         string node3 = "";       
         string topicgroupid = "";
         int weightans = 0;
+        string topicUrl = "";
         // 定義物品類別
         class Item
         {
@@ -51,7 +53,11 @@ namespace learningEX
             {
                 AddItemInput(i + 1); // 生成第 i 个物品的输入框
             }
-
+            if (Session["TopicUrl"] != null)
+            {
+                // 取得 Session 中存儲的 URL
+                topicUrl = Session["TopicUrl"].ToString();
+            }
         }
        
         private void GetItemsFromTextBoxes()
@@ -130,19 +136,29 @@ namespace learningEX
             }
             node2 = string.Join(",", allNodes[1].ToArray());
 
-            HttpCookie modifiedQuestionCookie = new HttpCookie("ModifiedQuestion", modifiedQuestion);
+            var question = new Dictionary<string, object>();
+            question["question1"] = itemCount;
+            question["question2"] = capacity;
 
-            HttpCookie modifiedAnswerCookie_1 = new HttpCookie("ModifiedAnswer1", sort);
-            HttpCookie modifiedAnswerCookie_2 = new HttpCookie("ModifiedAnswer2", node1);
-            HttpCookie modifiedAnswerCookie_3 = new HttpCookie("ModifiedAnswer3", node2);
-            HttpCookie modifiedAnswerCookie_4 = new HttpCookie("ModifiedAnswer4", node3);
-            HttpCookie modifiedAnswerCookie_5 = new HttpCookie("ModifiedAnswer5", shortcut.ToString());
-            HttpCookie modifiedAnswerCookie_6 = new HttpCookie("ModifiedAnswer6", (maxProfit.ToString() + "," + weightans.ToString()));
+            string questionJson = JsonConvert.SerializeObject(question);
 
-            Response.Cookies.Add(modifiedQuestionCookie);
-            Response.Cookies.Add(modifiedAnswerCookie);
+            HttpCookie questionCookie = new HttpCookie("Question", questionJson);
+            Response.Cookies.Add(questionCookie);
 
-            checkTopicGroupID();
+            var answers = new Dictionary<string, object>();
+            answers["answer1"] = sort;
+            answers["answer2"] = node1;
+            answers["answer3"] = node2;
+            answers["answer4"] = node3;
+            answers["answer5"] = shortcut.ToString();
+            answers["answer6"] = (maxProfit.ToString() + "," + weightans.ToString());
+
+            string answersJson = JsonConvert.SerializeObject(answers);
+
+            HttpCookie answersCookie = new HttpCookie("Answers", answersJson);
+            Response.Cookies.Add(answersCookie);
+            Response.Redirect(topicUrl);
+            //checkTopicGroupID();
         }
        
         private void checkTopicGroupID()
