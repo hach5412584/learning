@@ -74,6 +74,7 @@
     <Content Include="css\bootstrap.css" />
     <Content Include="css\signin.css" />
     <Content Include="DetailedExplanation.aspx" />
+    <Content Include="InputItem.aspx" />
     <Content Include="learning_map.aspx" />
     <Content Include="learning_scale.aspx" />
     <Content Include="login.aspx" />
@@ -86,6 +87,7 @@
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Writetopic.aspx" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ans_list.aspx.cs">
@@ -101,6 +103,13 @@
     </Compile>
     <Compile Include="DetailedExplanation.aspx.designer.cs">
       <DependentUpon>DetailedExplanation.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="InputItem.aspx.cs">
+      <DependentUpon>InputItem.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="InputItem.aspx.designer.cs">
+      <DependentUpon>InputItem.aspx</DependentUpon>
     </Compile>
     <Compile Include="learning_map.aspx.cs">
       <DependentUpon>learning_map.aspx</DependentUpon>
@@ -165,6 +174,13 @@
     </Compile>
     <Compile Include="topic_list.aspx.designer.cs">
       <DependentUpon>topic_list.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Writetopic.aspx.cs">
+      <DependentUpon>Writetopic.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Writetopic.aspx.designer.cs">
+      <DependentUpon>Writetopic.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
