@@ -18,38 +18,58 @@
         }
 
         .container {
-            max-width: 100%;
-            width: 100%;
-            max-height: 100%;
-            height: 100%;
-            overflow: hidden;
+            width: 90vw; /* 設定寬度為螢幕寬度的90% */
+            height: 90vh; /* 設定高度為螢幕高度的90% */
+            overflow: hidden; /* 隱藏超出容器的部分 */
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             background-color: #fff;
             display: flex;
             flex-direction: row;
-            align-items: center; /* 將元素在交叉軸上（這裡是垂直軸）置中 */
+            justify-content: center; /* 水平置中 */
+            align-items: center; /* 垂直置中 */
         }
 
         .Image-container {
-            flex: 5;
-            flex-basis: 50%;
+            flex: 1; /* 佔據 1/2 的空間 */
+            flex-basis: 60%; /* 設定初始寬度為60% */
             padding: 20px;
-            text-align: center;
+            display: flex; /* 將容器設置為 flexbox */
+            justify-content: center; /* 水平居中 */
+            align-items: center; /* 垂直居中 */
+            height: 100%; /* 設置高度為父容器的100% */
         }
 
+            .Image-container img {
+                max-width: 100%; /* 圖片最大寬度為Image-container的寬度 */
+                max-height: 100%; /* 圖片最大高度為Image-container的高度 */
+            }
+
         .datatextbutton-container {
-            max-width: 100%;
-            max-height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center; /* 將元素在交叉軸上（這裡是垂直軸）置中 */
-            justify-content: center;
+            flex: 1; /* 佔據父容器的所有空間 */
+            flex-basis: 40%; /* 設定初始寬度為 40% */
+            padding: 20px;
+            height: 100%; /* 設置高度為父容器的100% */
+            text-align: center;
+            overflow: hidden; /* 超出容器的部分隱藏 */
+            display: flex; /* 將子元素放置在一個 flex 容器中 */
+            flex-direction: column; /* 子元素垂直排列 */
+        }
+
+        .data-container {
+            flex: 8; /* 填滿剩餘空間 */
+            word-wrap: break-word;
+            padding: 20px;
+            text-align: left;
+        }
+
+        .input-container {
+            flex: 1; /* 填滿剩餘空間 */
             padding: 20px;
         }
 
         .button-container {
-            flex: 1;
+            flex: 1; /* 填滿剩餘空間 */
             display: flex;
             flex-direction: row; /* 橫向排列 */
             align-items: center;
@@ -58,7 +78,6 @@
         }
 
             .button-container input[type="button"] {
-                flex: 1;
                 flex-basis: 10%;
                 margin: 0 20px; /* 設置左右間距為 10px，上下間距為 0 */
                 padding: 10px;
@@ -72,10 +91,6 @@
         .thumbnail {
             max-width: 100%;
             max-height: 100%;
-        }
-
-        .input-container {
-            width: 48%; /* 考慮到margin和padding，這裡使用48%而不是50% */
         }
 
         .text-input {
@@ -97,14 +112,6 @@
         .detailedexplanation-container {
             flex: 1;
             flex-basis: 10%;
-            padding: 20px;
-            text-align: left;
-        }
-
-
-        .data-container {
-            flex: 8; /* 佔據 7/10 的空間 */
-            flex-basis: 80%; /* 設定初始寬度為 70% */
             padding: 20px;
             text-align: left;
         }
@@ -139,18 +146,15 @@
                     <div id="detailedexplanationtext" runat="server" class="detailedexplanation"></div>
                 </div>
 
-                <div class="inputandcheckbutton-container">
-                    <div class="input-container">
-                        <asp:TextBox runat="server" ID="inputAns" CssClass="text-input" placeholder="輸入答案：" />
-                    </div>
-
+                <div class="input-container">
+                    <asp:TextBox runat="server" ID="inputAns" CssClass="text-input" placeholder="輸入答案：" />
                 </div>
                 <div class="button-container">
                     <input type="button" id="btnPrev" runat="server" value="上一頁" onserverclick="btnPrev_Click" />
                     <div id="pageload" runat="server"></div>
                     <input type="button" id="btnNext" runat="server" value="下一頁" onserverclick="btnNext_Click" /><br>
                     <asp:Label ID="lblOverallAccuracy" runat="server" Text=""></asp:Label>
-                    <input type="button" id="btnChangeTopic" runat="server" value="修改題目" onserverclick="ChangeTopic_Click"/>
+                    <input type="button" id="btnChangeTopic" runat="server" value="修改題目" onserverclick="ChangeTopic_Click" />
                     <asp:Label ID="Label1" runat="server" Text=""></asp:Label>
                     <asp:Label ID="Label2" runat="server" Text=""></asp:Label>
                 </div>

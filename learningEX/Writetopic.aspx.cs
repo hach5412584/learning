@@ -45,7 +45,7 @@ namespace learningEX
         {
             itemCount = (int)Session["ItemCount"];
             capacity = (int)Session["Capacity"];
-            userid = 1;// (int)Session["UserID"];
+            userid =  (int)Session["UserID"];
             // 清空 ItemPanel 控件
             ItemPanel.Controls.Clear();
             // 重新生成 TextBox 控件

@@ -23,8 +23,8 @@ namespace learningEX
                 Session["TopicUrl"] = Request.Url.ToString();
                 ViewState["QuestionIndex"] = 0;
                 ViewState["QuestionResults"] = new Dictionary<string, bool>(); // 初始化題目正確與否的 Dictionary
-                topicname = Request.QueryString["topicname"];
-                topictype = Request.QueryString["topictype"];
+                topicname = "BranchandBound1";//Request.QueryString["topicname"];
+                topictype = "Algorithm";//Request.QueryString["topictype"];
                 TakeQuestion();
 
                 if (Request.Cookies["Answers"] != null && Request.Cookies["Question"] != null)
