@@ -18,6 +18,10 @@ namespace learningEX
             Session.Remove("topicUrl");
             Session.Remove("AnswersString");
             Session.Remove("currentPage");
+            Session.Remove("question_items");
+            Session.Remove("question_capacity");
+            Session.Remove("answers_list");
+
             Response.Redirect("mainpage.aspx");
 
         }

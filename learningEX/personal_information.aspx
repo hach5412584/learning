@@ -97,28 +97,33 @@
                     </div>
                 </div>
             </div>
-        </form>
 
-        <!-- 答案歷史表格 -->
-        <table id="answerHistory" class="table table-bordered">
-            <!-- 表頭 -->
-            <thead class="thead-dark">
-                <tr>
-                    <th>日期</th>
-                    <th>題目</th>
-                    <th>答案</th>
-                </tr>
-            </thead>
-            <!-- 填入資料 -->
-            <tbody>
-                <tr>
-                    <td>2023-10-30</td>
-                    <td><a href="question1.html">題目1</a></td>
-                    <td><a href="answerA.html">答案A</a></td>
-                </tr>
-                <!-- 其他作答紀錄... -->
-            </tbody>
-        </table>
+            <!-- 答案歷史表格 -->
+            <asp:GridView ID="gvAnswerHistory" runat="server" AutoGenerateColumns="False" CssClass="table table-bordered">
+                <Columns>
+                    <asp:BoundField DataField="AnswerDate" HeaderText="作答日期" />
+                    <asp:TemplateField HeaderText="題目名稱">
+                        <ItemTemplate>
+                            <a href='<%# "topic.aspx?topicname=" + Eval("Topicname") + "&topictype=" + Eval("Topictype") %>'>
+                                <asp:Label ID="lblTopicName" runat="server" Text='<%# Eval("Topicname") %>'></asp:Label>
+                            </a>
+                        </ItemTemplate>
+                    </asp:TemplateField>
+                    <asp:BoundField DataField="Topictype" HeaderText="題目類型" />
+                    <asp:TemplateField HeaderText="答案">
+                        <ItemTemplate>
+                            <asp:LinkButton ID="lnkReview" runat="server" Text="回顧" OnClick="lnkReview_Click" CommandArgument='<%# Container.DataItemIndex %>' />
+                        </ItemTemplate>
+                    </asp:TemplateField>
+                    <asp:BoundField DataField="Accuracy" HeaderText="正確率" />
+                    <asp:TemplateField HeaderText="HistoricalAnswers" Visible="false">
+                        <ItemTemplate>
+                            <asp:Label ID="lblHistoricalAnswers" runat="server" Text='<%# Eval("HistoricalAnswers") %>'></asp:Label>
+                        </ItemTemplate>
+                    </asp:TemplateField>
+                </Columns>
+            </asp:GridView>
+        </form>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
@@ -30,6 +32,9 @@ namespace learningEX
                     username.Text = userData.Username;
                     studentID.Text = userData.StudentID;
                 }
+
+                DataTable dt = LoadHistoricalAnswersFromDatabase(userId); // 从数据库加载历史答案数据
+                FillGridView(dt);
             }
         }
         public class UserData
@@ -170,6 +175,45 @@ namespace learningEX
                 // 如果更新成功，影響的行數應為 1
                 return rowsAffected == 1;
             }
+        }
+        private DataTable LoadHistoricalAnswersFromDatabase(string userID)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            {
+                connection.Open();
+                string query = "SELECT AnswerDate, Topicname, HistoricalAnswers, Accuracy, Topictype FROM UserAnswerHistory WHERE UserID = @UserID";
+                SqlCommand cmd = new SqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@UserID", userID);
+                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                adapter.Fill(dt);
+            }
+            return dt;
+        }
+        private void FillGridView(DataTable dt)
+        {
+            if (dt.Rows.Count > 0)
+            {
+                gvAnswerHistory.DataSource = dt;
+                gvAnswerHistory.DataBind();
+            }
+        }
+        protected void lnkReview_Click(object sender, EventArgs e)
+        {
+            LinkButton lnkReview = (LinkButton)sender;
+            GridViewRow row = (GridViewRow)lnkReview.NamingContainer;
+            Label lblHistoricalAnswers = (Label)row.FindControl("lblHistoricalAnswers");
+            string historicalAnswers = lblHistoricalAnswers.Text;
+            string accuracyString = row.Cells[4].Text;
+            // 将 historicalAnswers 字符串反序列化为字典
+            Dictionary<string, string> answerResults = JsonConvert.DeserializeObject<Dictionary<string, string>>(historicalAnswers);
+            float accuracy = 0.0f;
+            float.TryParse(accuracyString, out accuracy);
+            // 将反序列化后的字典存储到 Session 中
+            Session["answerResults"] = answerResults;
+            Session["Accuracy"] = accuracy;
+            // 跳转到 ans_list 页面
+            Response.Redirect("ans_list.aspx");
         }
     }
 }

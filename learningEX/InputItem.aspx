@@ -6,19 +6,22 @@
 <head runat="server">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
 </head>
 <body>
     <form id="form1" runat="server">
-        <div>
+        <div class="container mt-5">
             <h2>输入重量及項目數量</h2>
-            <asp:Label ID="InputLabel1" runat="server" Text="背包承重  "></asp:Label>
-            <asp:TextBox ID="InCapacity" runat="server"></asp:TextBox>
-            <br />
-            <br />
-            <asp:Label ID="InputLabel2" runat="server" Text="項目數量  "></asp:Label>
-            <asp:TextBox ID="ITEM" runat="server"></asp:TextBox>
-            <br />
-            <asp:Button ID="ConfirmButton" runat="server" Text="確認" OnClick="ConfirmButton_Click" />
+            <div class="mb-3">
+                <label for="InCapacity" class="form-label">背包承重</label>
+                <asp:TextBox ID="InCapacity" runat="server" CssClass="form-control"></asp:TextBox>
+            </div>
+            <div class="mb-3">
+                <label for="ITEM" class="form-label">項目數量</label>
+                <asp:TextBox ID="ITEM" runat="server" CssClass="form-control"></asp:TextBox>
+            </div>
+            <asp:Button ID="ConfirmButton" runat="server" Text="確認" CssClass="btn btn-primary" OnClick="ConfirmButton_Click" />
         </div>
     </form>
 </body>

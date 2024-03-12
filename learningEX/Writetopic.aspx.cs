@@ -28,8 +28,10 @@ namespace learningEX
         int weightans = 0;
         string topicUrl = "";
         // 定義物品類別
-        class Item
+        public class Item
         {
+            internal string weight;
+
             public int Weight { get; }
             public int Value { get; }
 
@@ -136,28 +138,17 @@ namespace learningEX
             }
             node2 = string.Join(",", allNodes[1].ToArray());
 
-            var question = new Dictionary<string, object>();
-            question["question1"] = itemCount;
-            question["question2"] = capacity;
+            List<string> answers = new List<string>();
+            answers.Add(sort);
+            answers.Add(node1);
+            answers.Add(node2);
+            answers.Add(node3);
+            answers.Add((maxProfit.ToString() + "," + weightans.ToString()));
+            answers.Add(shortcut.ToString());
 
-            string questionJson = JsonConvert.SerializeObject(question);
-
-            HttpCookie questionCookie = new HttpCookie("Question", questionJson);
-            Response.Cookies.Add(questionCookie);
-
-            var answers = new Dictionary<string, object>();
-            answers["answer1"] = sort;
-            answers["answer2"] = node1;
-            answers["answer3"] = node2;
-            answers["answer4"] = node3;
-            answers["answer5"] = (maxProfit.ToString() + "," + weightans.ToString());
-            answers["answer6"] = shortcut.ToString();
-            
-
-            string answersJson = JsonConvert.SerializeObject(answers);
-
-            HttpCookie answersCookie = new HttpCookie("Answers", answersJson);
-            Response.Cookies.Add(answersCookie);
+            Session["question_items"] = items;
+            Session["question_capacity"] = capacity;
+            Session["answers_list"] = answers;
             Response.Redirect(topicUrl);
             //checkTopicGroupID();
         }
