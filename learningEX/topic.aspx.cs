@@ -165,7 +165,7 @@ namespace learningEX
                                         }
                                         foreach (var item in Userinputscope)
                                         {
-                                            userinputscope.InnerText += item + "\n";
+                                            userinputscope.InnerText = item + "\n";
                                         }
                                     }
                                 }
@@ -293,6 +293,7 @@ namespace learningEX
                 Session["Accuracy"] = Accuracy;
                 Response.Redirect("~/ans_list.aspx");
             }
+            inputAns.Text = "";
         }
         private void SaveAnswerInfoToSession(string questionID, string content)
         {
@@ -323,6 +324,7 @@ namespace learningEX
                 // 獲取上一題
                 TakeQuestion();
             }
+            inputAns.Text = "";
         }
         private void TakeImage(string topicID, string imageID)
         {
