@@ -1,12 +1,13 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="topic.aspx.cs" Inherits="learningEX.topic" %>
 
+<%@ Import Namespace="System.Web.Script.Serialization" %>
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title>Branch-and-Bound</title>
     <style>
-        body {
+        .body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
@@ -14,42 +15,68 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
+            width: 100vw;
             background-color: #f4f4f4;
         }
 
         .container {
-            max-width: 100%;
-            width: 100%;
-            max-height: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             overflow: hidden;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
-            background-color: #fff;
+            /*background-color: #fff;*/
             display: flex;
             flex-direction: row;
-            align-items: center; /* 將元素在交叉軸上（這裡是垂直軸）置中 */
+            max-width: 100%; /* 最大寬度不超過螢幕寬度 */
+            max-height: 100%;
+            /* 水平和垂直置中 */
+            justify-content: center;
+            align-items: center;
         }
 
         .Image-container {
-            flex: 5;
-            flex-basis: 50%;
+            flex: 1; /* 佔據 1/2 的空間 */
+            flex-basis: 60%; /* 設定初始寬度為60% */
             padding: 20px;
-            text-align: center;
+            display: flex; /* 將容器設置為 flexbox */
+            justify-content: center; /* 水平居中 */
+            align-items: center; /* 垂直居中 */
+            height: 100%; /* 設置高度為父容器的100% */
+            overflow: auto; /*滾動條*/
         }
 
+            .Image-container img {
+                max-width: 100%; /* 圖片最大寬度為Image-container的寬度 */
+                max-height: 100%; /* 圖片最大高度為Image-container的高度 */
+            }
+
         .datatextbutton-container {
-            max-width: 100%;
-            max-height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center; /* 將元素在交叉軸上（這裡是垂直軸）置中 */
-            justify-content: center;
+            flex: 1; /* 佔據父容器的所有空間 */
+            flex-basis: 40%; /* 設定初始寬度為60% */
+            font-size: 15px;
+            height: 100%; /* 設置高度為父容器的100% */
+            width: 100%;
+            text-align: center;
+            overflow: hidden; /* 超出容器的部分隱藏 */
+            display: flex; /* 將子元素放置在一個 flex 容器中 */
+            flex-direction: column; /* 子元素垂直排列 */
+        }
+
+        .data-container {
+            flex: 6; /* 填滿剩餘空間 */
+            word-wrap: break-word;
+            padding: 20px;
+            align-items: center; /* 垂直置中 */
+        }
+
+        .input-container {
+            flex: 2; /* 填滿剩餘空間 */
             padding: 20px;
         }
 
         .button-container {
-            flex: 1;
+            flex: 2; /* 填滿剩餘空間 */
             display: flex;
             flex-direction: row; /* 橫向排列 */
             align-items: center;
@@ -58,7 +85,6 @@
         }
 
             .button-container input[type="button"] {
-                flex: 1;
                 flex-basis: 10%;
                 margin: 0 20px; /* 設置左右間距為 10px，上下間距為 0 */
                 padding: 10px;
@@ -72,10 +98,6 @@
         .thumbnail {
             max-width: 100%;
             max-height: 100%;
-        }
-
-        .input-container {
-            width: 48%; /* 考慮到margin和padding，這裡使用48%而不是50% */
         }
 
         .text-input {
@@ -101,20 +123,14 @@
             text-align: left;
         }
 
-
-        .data-container {
-            flex: 8; /* 佔據 7/10 的空間 */
-            flex-basis: 80%; /* 設定初始寬度為 70% */
-            padding: 20px;
-            text-align: left;
-        }
-
         .data {
             font-size: 25px;
             color: #333;
             font-weight: bold;
             word-break: break-all; /* 在單詞內部進行換行 */
-            overflow: hidden; /* 超出容器的部分隱藏 */
+            text-align: left;
+            justify-content: center; /* 水平置中 */
+            align-items: center; /* 垂直置中 */
         }
 
         .detailedexplanation {
@@ -124,19 +140,40 @@
             word-break: break-all; /* 在單詞內部進行換行 */
             overflow: hidden;
         }
+
+
+        /* 添加CSS样式来为表格添加边框 */
+        #dynamicTable {
+            border-collapse: collapse;
+            width: 80%;
+        }
+
+            #dynamicTable th, #dynamicTable td {
+                border: 1px solid black;
+                padding: 8px;
+                text-align: center;
+                font-size: 18px;
+            }
+
+            #dynamicTable th {
+                background-color: #f2f2f2;
+            }
     </style>
 </head>
 <body>
     <form id="form1" runat="server">
         <div class="container">
             <div class="Image-container">
-                <asp:Image ID="imgTopic" runat="server" />
+               <asp:Image ID="imgTopic" runat="server" />
+
+                <asp:Table ID="dynamicTable" runat="server"></asp:Table>
             </div>
 
             <div class="datatextbutton-container">
                 <div class="data-container">
                     <div id="questiondata" runat="server" class="data"></div>
-                    <div id="detailedexplanationtext" runat="server" class="detailedexplanation"></div>
+                    <p></p>
+                    <div id="userinputscope" runat="server" class="data"></div>                   
                 </div>
 
                 <div class="inputandcheckbutton-container">
@@ -150,8 +187,8 @@
                     <div id="pageload" runat="server"></div>
                     <input type="button" id="btnNext" runat="server" value="下一頁" onserverclick="btnNext_Click" /><br>
                     <asp:Label ID="lblOverallAccuracy" runat="server" Text=""></asp:Label>
-                    <input type="button" id="btnChangeTopic" runat="server" value="修改題目" onserverclick="ChangeTopic_Click"/>
-                    <asp:Label ID="Label1" runat="server" Text=""></asp:Label>
+                    <input type="button" id="btnChangeTopic" runat="server" value="修改題目" onserverclick="ChangeTopic_Click" />
+                    
                 </div>
             </div>
         </div>

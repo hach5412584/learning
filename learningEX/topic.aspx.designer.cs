@@ -31,6 +31,15 @@ namespace learningEX {
         protected global::System.Web.UI.WebControls.Image imgTopic;
         
         /// <summary>
+        /// dynamicTable 控制項。
+        /// </summary>
+        /// <remarks>
+        /// 自動產生的欄位。
+        /// 若要修改，請將欄位宣告從設計工具檔案移到程式碼後置檔案。
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Table dynamicTable;
+        
+        /// <summary>
         /// questiondata 控制項。
         /// </summary>
         /// <remarks>
@@ -40,13 +49,13 @@ namespace learningEX {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl questiondata;
         
         /// <summary>
-        /// detailedexplanationtext 控制項。
+        /// userinputscope 控制項。
         /// </summary>
         /// <remarks>
         /// 自動產生的欄位。
         /// 若要修改，請將欄位宣告從設計工具檔案移到程式碼後置檔案。
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl detailedexplanationtext;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl userinputscope;
         
         /// <summary>
         /// inputAns 控制項。
@@ -101,14 +110,5 @@ namespace learningEX {
         /// 若要修改，請將欄位宣告從設計工具檔案移到程式碼後置檔案。
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlInputButton btnChangeTopic;
-        
-        /// <summary>
-        /// Label1 控制項。
-        /// </summary>
-        /// <remarks>
-        /// 自動產生的欄位。
-        /// 若要修改，請將欄位宣告從設計工具檔案移到程式碼後置檔案。
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Label1;
     }
 }

@@ -15,6 +15,8 @@ namespace learningEX
             {
                 // 如果是从 topic.aspx 跳转过来的，显示按钮
                 btnGoToSurvey.Visible = true;
+                Session.Remove("UserInputData");
+                Session.Remove("UserInputsCope");
             }
             else
             {

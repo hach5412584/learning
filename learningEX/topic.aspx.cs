@@ -1,18 +1,18 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
-using System.Web;
+using System.Web.UI;
 using System.Web.UI.WebControls;
+
+
 
 namespace learningEX
 {
     public partial class topic : System.Web.UI.Page
     {
+
         string ConnectionString = "Data Source=DESKTOP-VLAJAD1;Initial Catalog=TopicDatabase;User Id=test;Password=;";
         string topicname = "NULL";
         string topictype = "NULL";
@@ -27,353 +27,382 @@ namespace learningEX
                 topicname = Request.QueryString["topicname"];
                 topictype = Request.QueryString["topictype"];
                 Session["topicname"] = topicname;
-                Session["topictype"] = topictype;
-                TakeQuestion();
+                Session["topictype"] = topictype;              
+                TakeQuestion();                  
                 Session["Correctcount"] = 0;
                 if (topicname == "BranchandBound1" && Session["question_items"] != null && Session["answers_list"] != null)
                 {
-                    List<string> answers = Session["answers_list"] as List<string>;
+                    List<string> answers = Session["answers_list"] as List<string>;                  
                     List<Writetopic.Item> questionItems = Session["question_items"] as List<Writetopic.Item>;
-                    if (answers != null)
+                   /* if (answers != null)
                     {
                         foreach (string str in answers)
                         {
                             Label1.Text += "(" + str + "),";
                         }
-                    }
+                    }*/
                     if (questionItems != null)
                     {
+
                         // 遍歷 questionItems 並生成相應的頁面內容
-                        foreach (Writetopic.Item item in questionItems)
+                        /*foreach (Writetopic.Item item in questionItems)
                         {
                             // 根據 item 的屬性值動態生成頁面內容，例如：
                             Label label = new Label();
                             label.Text = $"Weight: {item.Weight}, Value: {item.Value}";
                             // 將 label 或其他控件添加到頁面中的適當位置
                             form1.Controls.Add(label);
-                        }
-                    }
+                        }*/
+
+                    }                  
                     Session.Remove("question_items");
                     Session.Remove("question_capacity");
                     Session.Remove("answers_list");
                 }
             }
         }
-            // 定義 TakeID 方法
-            private void TakeID()
+        // 定義 TakeID 方法
+        private void TakeID()
+        {
+            try
             {
-                try
+                using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    using (SqlConnection connection = new SqlConnection(ConnectionString))
+                    connection.Open();
+
+                    // 使用参数化查询以防止SQL注入
+                    string query = "SELECT ID FROM dbo.TopicNum WHERE Topicname = @Topicname AND Topictype = @Topictype";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        connection.Open();
+                        // 添加参数
+                        command.Parameters.AddWithValue("@Topicname", topicname);
+                        command.Parameters.AddWithValue("@Topictype", topictype);
 
-                        // 使用参数化查询以防止SQL注入
-                        string query = "SELECT ID FROM dbo.TopicNum WHERE Topicname = @Topicname AND Topictype = @Topictype";
-
-                        using (SqlCommand command = new SqlCommand(query, connection))
+                        // 执行查询
+                        using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            // 添加参数
-                            command.Parameters.AddWithValue("@Topicname", topicname);
-                            command.Parameters.AddWithValue("@Topictype", topictype);
-
-                            // 执行查询
-                            using (SqlDataReader reader = command.ExecuteReader())
+                            if (reader.Read())
                             {
-                                if (reader.Read())
-                                {
-                                    // 如果有匹配的记录，获取topicID
-                                    string topicID = reader["ID"].ToString();
-                                    ViewState["TopicID"] = topicID;
-                                    Debug.WriteLine("TopicID found: " + topicID);
+                                // 如果有匹配的记录，获取topicID
+                                string topicID = reader["ID"].ToString();
+                                ViewState["TopicID"] = topicID;
+                                Debug.WriteLine("TopicID found: " + topicID);
 
-                                }
-                                else
-                                {
-                                    Debug.WriteLine("No matching record found.");
-                                }
+                            }
+                            else
+                            {
+                                Debug.WriteLine("No matching record found.");
                             }
                         }
                     }
                 }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Error: " + ex.Message);
-                    // 处理异常
-                }
             }
-
-            private void TakeQuestion()
+            catch (Exception ex)
             {
-                try
+                Debug.WriteLine("Error: " + ex.Message);
+                // 处理异常
+            }
+        }
+
+        private void TakeQuestion()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    using (SqlConnection connection = new SqlConnection(ConnectionString))
+                    connection.Open();
+                    TakeID();
+                    string topicID = ViewState["TopicID"] as string;
+                    int pageSize = 1; // 每頁顯示的題目數量                                     
+                    int currentPage = (int)ViewState["QuestionIndex"];
+                    Session["currentPage"] = currentPage;
+                    int totalPages = GetTotalQuestions();
+                    Modifybuttonswitch();//修改題目按鈕開關
+                    pageload.InnerText = $"{currentPage + 1}/{totalPages}";
+                    // 計算分頁的 OFFSET
+                    int offset = currentPage * pageSize;
+                    // 使用参数化查询以防止 SQL 注入
+                    string query = "SELECT ImageID, questionID, Questiondata FROM dbo.TopicQuestion WHERE ID = @TopicID ORDER BY (SELECT NULL) OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+                    List<string[]> userinputdata = Session["UserInputData"] as List<string[]>; //表格
+                    List<string> Userinputscope = Session["UserInputsCope"] as List<string>;
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        connection.Open();
-                        TakeID();
-                        string topicID = ViewState["TopicID"] as string;
-                        int pageSize = 1; // 每頁顯示的題目數量
-                                          // 獲取當前頁碼
-                        int currentPage = (int)ViewState["QuestionIndex"];
-                        Session["currentPage"] = currentPage;
-                        int totalPages = GetTotalQuestions();
-                        pageload.InnerText = $"{currentPage + 1}/{totalPages}";
-                        // 計算分頁的 OFFSET
-                        int offset = currentPage * pageSize;
-                        // 使用参数化查询以防止 SQL 注入
-                        string query = "SELECT ImageID, questionID, Questiondata FROM dbo.TopicQuestion WHERE ID = @TopicID ORDER BY (SELECT NULL) OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+                        command.Parameters.AddWithValue("@TopicID", topicID);
+                        command.Parameters.AddWithValue("@Offset", offset);
+                        command.Parameters.AddWithValue("@PageSize", pageSize);
 
-                        using (SqlCommand command = new SqlCommand(query, connection))
+                        using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            command.Parameters.AddWithValue("@TopicID", topicID);
-                            command.Parameters.AddWithValue("@Offset", offset);
-                            command.Parameters.AddWithValue("@PageSize", pageSize);
-
-                            using (SqlDataReader reader = command.ExecuteReader())
+                            if (reader.Read())
                             {
-                                if (reader.Read())
-                                {
-                                    string imageID = reader["ImageID"].ToString();
-                                    string questionID = reader["questionID"].ToString();
-                                    string questionData = reader["Questiondata"].ToString();
+                                string imageID = reader["ImageID"].ToString();
+                                string questionID = reader["questionID"].ToString();
+                                string questionData = reader["Questiondata"].ToString();
 
-                                    ViewState["QuestionID"] = questionID;
-                                    questiondata.InnerText = questionData;
+                                ViewState["QuestionID"] = questionID;
+                                questiondata.InnerText = questionData;
+                                if (Session["UserInputData"] == null)
+                                {
                                     TakeImage(topicID, imageID);
-
-                                    Debug.WriteLine($" ImageID: {imageID}, questionID: {questionID}, Questiondata: {questionData}");
                                 }
                                 else
                                 {
-                                    Debug.WriteLine("No matching record found.");
+                                    if (userinputdata != null)
+                                    {
+                                        // 遍历 userinputdata 并生成表格
+                                        foreach (var item in userinputdata)
+                                        {
+                                            TableRow row = new TableRow();
+                                            foreach (var value in item)
+                                            {
+                                                TableCell cell = new TableCell();
+                                                cell.Text = value;
+                                                row.Cells.Add(cell);
+                                            }
+                                            dynamicTable.Rows.Add(row);
+                                        }
+                                        foreach (var item in Userinputscope)
+                                        {
+                                            userinputscope.InnerText += item + "\n";
+                                        }
+                                    }
                                 }
+                                Debug.WriteLine($" ImageID: {imageID}, questionID: {questionID}, Questiondata: {questionData}");
+                            }
+                            else
+                            {
+                                Debug.WriteLine("No matching record found.");
                             }
                         }
                     }
                 }
-                catch (Exception ex)
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Error: " + ex.Message);
+                // 处理异常
+            }
+        }
+
+        private void Modifybuttonswitch()
+        {
+            if ((int)ViewState["QuestionIndex"] + 1 == 1) { btnChangeTopic.Visible = true; } else { btnChangeTopic.Visible = false; }
+            if ((int)ViewState["QuestionIndex"] + 1 == GetTotalQuestions()) { btnNext.Value = "完成"; } else { btnNext.Value = "下一步"; }
+        }
+
+        private int GetTotalQuestions()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    Debug.WriteLine("Error: " + ex.Message);
-                    // 处理异常
+                    connection.Open();
+                    string topicID = ViewState["TopicID"] as string;
+                    string query = "SELECT COUNT(*) FROM dbo.TopicQuestion WHERE ID = @TopicID";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@TopicID", topicID);
+
+                        // 使用 ExecuteScalar 來取得總題數
+                        object result = command.ExecuteScalar();
+
+                        // 轉換結果為整數
+                        return Convert.ToInt32(result);
+                    }
                 }
             }
-
-            private int GetTotalQuestions()
+            catch (Exception ex)
             {
-                try
-                {
-                    using (SqlConnection connection = new SqlConnection(ConnectionString))
-                    {
-                        connection.Open();
-                        string topicID = ViewState["TopicID"] as string;
-                        string query = "SELECT COUNT(*) FROM dbo.TopicQuestion WHERE ID = @TopicID";
-
-                        using (SqlCommand command = new SqlCommand(query, connection))
-                        {
-                            command.Parameters.AddWithValue("@TopicID", topicID);
-
-                            // 使用 ExecuteScalar 來取得總題數
-                            object result = command.ExecuteScalar();
-
-                            // 轉換結果為整數
-                            return Convert.ToInt32(result);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Error: " + ex.Message);
-                    // 處理異常，這裡你可以自行決定如何處理錯誤，例如返回一個默認值或拋出異常。
-                    return -1; // 這只是一個示例，實際應用中應根據情況修改
-                }
+                Debug.WriteLine("Error: " + ex.Message);
+                // 處理異常，這裡你可以自行決定如何處理錯誤，例如返回一個默認值或拋出異常。
+                return -1; // 這只是一個示例，實際應用中應根據情況修改
             }
+        }
 
-            protected void btnNext_Click(object sender, EventArgs e)
+        protected void btnNext_Click(object sender, EventArgs e)
+        {
+            // 獲取當前索引
+            int currentIndex = (int)ViewState["QuestionIndex"];
+            int totalPages = GetTotalQuestions();
+            if (currentIndex + 1 < totalPages)
             {
-                // 獲取當前索引
-                int currentIndex = (int)ViewState["QuestionIndex"];
-                int totalPages = GetTotalQuestions();
-                if (currentIndex + 1 < totalPages)
+                /*
+                // 更新索引
+                currentIndex++;
+
+                // 更新 ViewState
+                ViewState["QuestionIndex"] = currentIndex;
+                detailedexplanationtext.InnerText = "";
+                // 獲取下一題
+                TakeQuestion();
+                */
+
+                // 取得當前題目的相關信息
+                string questionID = ViewState["QuestionID"] as string;
+                string inputAnswer = inputAns.Text;  // 假設這是用戶輸入的答案
+                string correctAnswer = TakeAns(questionID);  // 假設這是正確的答案
+                string isCorrect = "NULL";
+                // 判斷答案是否正確
+                if (inputAnswer == correctAnswer)
                 {
-                    /*
-                    // 更新索引
-                    currentIndex++;
-
-                    // 更新 ViewState
-                    ViewState["QuestionIndex"] = currentIndex;
-                    detailedexplanationtext.InnerText = "";
-                    // 獲取下一題
-                    TakeQuestion();
-                    */
-
-                    // 取得當前題目的相關信息
-                    string questionID = ViewState["QuestionID"] as string;
-                    string inputAnswer = inputAns.Text;  // 假設這是用戶輸入的答案
-                    string correctAnswer = TakeAns(questionID);  // 假設這是正確的答案
-                    string isCorrect = "NULL";
-                    // 判斷答案是否正確
-                    if (inputAnswer == correctAnswer)
-                    {
-                        isCorrect = "答對";
-                    }
-                    else
-                    {
-                        isCorrect = "答錯";
-                    }
-                    // 將答案相關信息存入 Session
-                    SaveAnswerInfoToSession(questionID, isCorrect);
-                    
-                    ViewState["QuestionIndex"] = ++currentIndex;
-                    detailedexplanationtext.InnerText = "";
-
-                    TakeQuestion();
+                    isCorrect = "答對";
                 }
                 else
                 {
-                    string questionID = ViewState["QuestionID"] as string;
-                    string inputAnswer = inputAns.Text;  // 用戶輸入的答案
-                    string correctAnswer = TakeAns(questionID);  // 正確的答案
-                    string isCorrect = "NULL";
-                    // 判斷答案是否正確
-                    if (inputAnswer == correctAnswer)
+                    isCorrect = "答錯";
+                }
+                // 將答案相關信息存入 Session
+                SaveAnswerInfoToSession(questionID, isCorrect);
+                ViewState["QuestionIndex"] = ++currentIndex;
+                TakeQuestion();
+            }
+            else
+            {
+                string questionID = ViewState["QuestionID"] as string;
+                string inputAnswer = inputAns.Text;  // 用戶輸入的答案
+                string correctAnswer = TakeAns(questionID);  // 正確的答案
+                string isCorrect = "NULL";
+                // 判斷答案是否正確
+                if (inputAnswer == correctAnswer)
+                {
+                    isCorrect = "答對";
+                }
+                else
+                {
+                    isCorrect = "答錯";
+                }
+                // 將答案相關信息存入 Session
+                SaveAnswerInfoToSession(questionID, isCorrect);
+                Dictionary<string, string> answerResults = Session["AnswerResults"] as Dictionary<string, string>;
+                List<string> values = answerResults.Values.ToList<string>();
+                for (int i = 0; i < totalPages; i++)
+                {
+                    if (values[i] == "答對")
                     {
-                        isCorrect = "答對";
+                        int count = Convert.ToInt32(Session["Correctcount"]);
+                        count++;
+                        Session["Correctcount"] = count;
                     }
-                    else
+                }
+                float count_out = Convert.ToInt32(Session["Correctcount"]);
+                float Accuracy = (count_out / totalPages) * 100;
+                Session.Remove("Correctcount");
+                Session["Accuracy"] = Accuracy;
+                Response.Redirect("~/ans_list.aspx");
+            }
+        }
+        private void SaveAnswerInfoToSession(string questionID, string content)
+        {
+            // 從 Session 中獲取 AnswerResults 字典，如果不存在則創建一個新的
+            Dictionary<string, string> answerResults = Session["AnswerResults"] as Dictionary<string, string>;
+
+            if (answerResults == null)
+            {
+                answerResults = new Dictionary<string, string>();
+            }
+
+            // 更新或添加當前題的答案結果
+            answerResults[questionID] = content;
+
+            // 將更新後的字典存回 Session
+            Session["AnswerResults"] = answerResults;
+        }
+
+        protected void btnPrev_Click(object sender, EventArgs e)
+        {
+            int currentIndex = (int)ViewState["QuestionIndex"];
+            // 獲取當前索引
+            if (currentIndex > 0)
+            {
+                // 更新 ViewState
+                ViewState["QuestionIndex"] = --currentIndex;
+                //  detailedexplanationtext.InnerText = "";
+                // 獲取上一題
+                TakeQuestion();
+            }
+        }
+        private void TakeImage(string topicID, string imageID)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(ConnectionString))
+                {
+                    connection.Open();
+                    string query = "SELECT Image FROM dbo.TopicImage WHERE ID = @TopicID AND ImageID = @ImageID";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        isCorrect = "答錯";
-                    }
-                    // 將答案相關信息存入 Session
-                    SaveAnswerInfoToSession(questionID, isCorrect);
-                    Dictionary<string, string> answerResults = Session["AnswerResults"] as Dictionary<string, string>;
-                    List<string> values = answerResults.Values.ToList<string>();
-                    for (int i = 0; i < totalPages; i++)
-                    {
-                        if (values[i] == "答對")
+                        command.Parameters.AddWithValue("@TopicID", topicID);
+                        command.Parameters.AddWithValue("@ImageID", imageID);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            int count = Convert.ToInt32(Session["Correctcount"]);
-                            count++;
-                            Session["Correctcount"] = count;
+                            if (reader.Read())
+                            {
+                                byte[] imageData = (byte[])reader["Image"];
+                                string base64String = Convert.ToBase64String(imageData);
+                                imgTopic.ImageUrl = "data:image/jpeg;base64," + base64String;
+                            }
+                            else
+                            {
+                                Debug.WriteLine("No matching record found.");
+                            }
                         }
                     }
-                    float count_out = Convert.ToInt32(Session["Correctcount"]);
-                    float Accuracy = (count_out / totalPages) * 100;
-                    Session.Remove("Correctcount");
-                    Session["Accuracy"] = Accuracy;
-                    Response.Redirect("~/ans_list.aspx");
                 }
             }
-            private void SaveAnswerInfoToSession(string questionID, string content)
+            catch (Exception ex)
             {
-                // 從 Session 中獲取 AnswerResults 字典，如果不存在則創建一個新的
-                Dictionary<string, string> answerResults = Session["AnswerResults"] as Dictionary<string, string>;
+                Debug.WriteLine("Error: " + ex.Message);
+            }
+        }
 
-                if (answerResults == null)
+        private string TakeAns(string questionID)
+        {
+            try
+            {
+                if (Request.Cookies["Answers"] != null && Request.Cookies["Question"] != null)
                 {
-                    answerResults = new Dictionary<string, string>();
+                    List<string> answers_string = Session["AnswersString"] as List<string>;
+                    int currentPage = Convert.ToInt32(Session["currentPage"]);
+                    return answers_string[currentPage];
                 }
-
-                // 更新或添加當前題的答案結果
-                answerResults[questionID] = content;
-
-                // 將更新後的字典存回 Session
-                Session["AnswerResults"] = answerResults;
-            }
-
-            protected void btnPrev_Click(object sender, EventArgs e)
-            {
-                int currentIndex = (int)ViewState["QuestionIndex"];
-                // 獲取當前索引
-                if (currentIndex > 0)
-                {
-
-                    // 更新 ViewState
-                    ViewState["QuestionIndex"] = --currentIndex;
-                    detailedexplanationtext.InnerText = "";
-
-                    // 獲取上一題
-                    TakeQuestion();
-                }
-            }
-            private void TakeImage(string topicID, string imageID)
-            {
-                try
+                else
                 {
                     using (SqlConnection connection = new SqlConnection(ConnectionString))
                     {
                         connection.Open();
-                        string query = "SELECT Image FROM dbo.TopicImage WHERE ID = @TopicID AND ImageID = @ImageID";
 
+                        string query = "SELECT Ans FROM dbo.TopicAns WHERE questionID = @QuestionID";
                         using (SqlCommand command = new SqlCommand(query, connection))
                         {
-                            command.Parameters.AddWithValue("@TopicID", topicID);
-                            command.Parameters.AddWithValue("@ImageID", imageID);
+                            command.Parameters.AddWithValue("@QuestionID", questionID);
 
-                            using (SqlDataReader reader = command.ExecuteReader())
-                            {
-                                if (reader.Read())
-                                {
-                                    byte[] imageData = (byte[])reader["Image"];
-                                    string base64String = Convert.ToBase64String(imageData);
-                                    imgTopic.ImageUrl = "data:image/jpeg;base64," + base64String;
-                                }
-                                else
-                                {
-                                    Debug.WriteLine("No matching record found.");
-                                }
-                            }
+                            // 使用 ExecuteScalar 來取得單一值（這裡是 Ans）
+                            object result = command.ExecuteScalar();
+                            return result.ToString();
                         }
                     }
                 }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Error: " + ex.Message);
-                }
             }
-
-            private string TakeAns(string questionID)
+            catch (Exception ex)
             {
-                try
-                {
-                    if (Request.Cookies["Answers"] != null && Request.Cookies["Question"] != null)
-                    {
-                        List<string> answers_string = Session["AnswersString"] as List<string>;
-                        int currentPage = Convert.ToInt32(Session["currentPage"]);
-                        return answers_string[currentPage];
-                    }
-                    else
-                    {
-                        using (SqlConnection connection = new SqlConnection(ConnectionString))
-                        {
-                            connection.Open();
-
-                            string query = "SELECT Ans FROM dbo.TopicAns WHERE questionID = @QuestionID";
-                            using (SqlCommand command = new SqlCommand(query, connection))
-                            {
-                                command.Parameters.AddWithValue("@QuestionID", questionID);
-
-                                // 使用 ExecuteScalar 來取得單一值（這裡是 Ans）
-                                object result = command.ExecuteScalar();
-                                return result.ToString();
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // 適當地處理例外，例如記錄錯誤、顯示錯誤訊息等
-                    return "發生錯誤：" + ex.Message;
-                }
+                // 適當地處理例外，例如記錄錯誤、顯示錯誤訊息等
+                return "發生錯誤：" + ex.Message;
             }
+        }
 
-            protected void ChangeTopic_Click(object sender, EventArgs e)
-            {
-                Session.Remove("question_items");
-                Session.Remove("question_capacity");
-                Session.Remove("answers_list");
+        protected void ChangeTopic_Click(object sender, EventArgs e)
+        {
+            Session.Remove("question_items");
+            Session.Remove("question_capacity");
+            Session.Remove("answers_list");
 
-                Response.Redirect("InputItem.aspx");
-            }
+            Response.Redirect("InputItem.aspx");
+        }
 
         //目前用不到
         /*

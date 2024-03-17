@@ -83,6 +83,7 @@
     <Content Include="login.aspx" />
     <Content Include="logout.aspx" />
     <Content Include="mainpage.aspx" />
+    <Content Include="newASPXTRY.aspx" />
     <Content Include="personal_information.aspx" />
     <Content Include="register.aspx" />
     <Content Include="topic.aspx" />
@@ -148,6 +149,13 @@
     </Compile>
     <Compile Include="mainpage.aspx.designer.cs">
       <DependentUpon>mainpage.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="newASPXTRY.aspx.cs">
+      <DependentUpon>newASPXTRY.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="newASPXTRY.aspx.designer.cs">
+      <DependentUpon>newASPXTRY.aspx</DependentUpon>
     </Compile>
     <Compile Include="personal_information.aspx.cs">
       <DependentUpon>personal_information.aspx</DependentUpon>

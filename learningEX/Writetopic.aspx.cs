@@ -4,8 +4,7 @@ using System.Web.UI.WebControls; // 添加使用TextBox控件的命名空间
 using System.Linq; // 添加 Linq 命名空間
 using System.Web.UI;
 using System.Data.SqlClient;
-using System.Web;
-using Newtonsoft.Json;
+using System.Text;
 
 namespace learningEX
 {
@@ -13,9 +12,13 @@ namespace learningEX
     {
         string connectionString = "Data Source=DESKTOP-VLAJAD1;Initial Catalog=TopicDatabase;User Id=test;Password=;"; // 替换为您的数据库连接字符串
         List<Item> items = new List<Item>(); // 用于存储物品信息
+        List<string> userinputscope = new List<string>();
+        List<string[]> userinputdata = new List<string[]>();       
         private static int itemCount;
         private static int capacity;
         private static int userid;
+        string message;
+        bool CheckInputdata;
         // 初始化最大獲利
         int maxProfit = 0;
         int shortcut = 0;
@@ -30,8 +33,6 @@ namespace learningEX
         // 定義物品類別
         public class Item
         {
-            internal string weight;
-
             public int Weight { get; }
             public int Value { get; }
 
@@ -64,9 +65,14 @@ namespace learningEX
        
         private void GetItemsFromTextBoxes()
         {
+            CheckInputdata = true;
+            message = "";
             // 清空 items 列表
             items.Clear();
-
+            userinputscope.Clear();
+            userinputdata.Clear();
+            userinputscope.Add("背包容量 = " + capacity);
+            userinputdata.Add(new string[] { "項目", "重量(Wi)", "價值(Pi)" });
             // 获取用户输入的物品信息并保存到列表中
             for (int i = 0; i < itemCount; i++)
             {
@@ -76,24 +82,40 @@ namespace learningEX
                 if (weightTextBox != null && valueTextBox != null)
                 {
                     int weight, value;
-                    if (int.TryParse(weightTextBox.Text, out weight) && int.TryParse(valueTextBox.Text, out value))
+                    int.TryParse(weightTextBox.Text, out weight);
+                    int.TryParse(valueTextBox.Text, out value);
+                    if (weight > 0 && value > 0 && weight <= capacity)
                     {
                         System.Diagnostics.Debug.WriteLine($"成功获取到物品 {i + 1} 的重量：{weight}，价值：{value}");
                         items.Add(new Item(weight, value));
+                        userinputdata.Add(new string[] { (i + 1).ToString(), weight.ToString(), value.ToString() });
+                    }
+                    else if (weight > capacity)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"无法获取到物品 {i + 1} 的重量和价值");
+                        message = "※輸入錯誤 超出背包重量 請重新輸入";
+                        CheckInputdata = false;
                     }
                     else
                     {
                         System.Diagnostics.Debug.WriteLine($"无法获取到物品 {i + 1} 的重量和价值");
+                        message = "※輸入錯誤 必須大於0 請重新輸入";
+                        CheckInputdata = false;
                     }
                 }
+                else
+                {
+                    CheckInputdata =false;                  
+                }
             }
+            lblMessage.Text = message;
         }
 
         protected void SubmitButton_Click(object sender, EventArgs e)
         {
             // 在每次提交按钮点击时，获取用户输入并保存到 items 列表
             GetItemsFromTextBoxes();
-            main();
+            if (CheckInputdata == true) { main(); }          
         }
 
         protected void main()
@@ -111,7 +133,18 @@ namespace learningEX
             // 使用遞迴計算最大獲利
             List<List<int>> allNodes = new List<List<int>>(); // 存儲所有節點的索引
             List<int> selectedItems = KnapsackBranchAndBound(0, 0, 0, items, capacity, ref maxProfit, allNodes, ref shortcut,ref weightans);
+            StringBuilder sb = new StringBuilder();
+            foreach (var node in allNodes)
+            {
+                sb.Append("[");
+                sb.Append(string.Join(", ", node));
+                sb.Append("]");
+                sb.AppendLine();
+            }
 
+            // 將結果輸出到日誌中
+            System.Diagnostics.Debug.WriteLine("All Nodes:");
+            System.Diagnostics.Debug.WriteLine(sb.ToString());
             // 輸出最大獲利
             int totalValue = CalculateTotalValue(selectedItems, items);
             Response.Write("最大獲利：" + maxProfit);
@@ -136,19 +169,21 @@ namespace learningEX
                 }
                 Response.Write($"[{node[0]}, {node[1]}, {node[2]}] ");
             }
+
             node2 = string.Join(",", allNodes[1].ToArray());
 
-            List<string> answers = new List<string>();
+            List<string> answers = new List<string>();           
             answers.Add(sort);
             answers.Add(node1);
             answers.Add(node2);
             answers.Add(node3);
             answers.Add((maxProfit.ToString() + "," + weightans.ToString()));
             answers.Add(shortcut.ToString());
-
+            Session["UserInputsCope"] = userinputscope;
             Session["question_items"] = items;
             Session["question_capacity"] = capacity;
             Session["answers_list"] = answers;
+            Session["UserInputData"] = userinputdata;
             Response.Redirect(topicUrl);
             //checkTopicGroupID();
         }
@@ -272,9 +307,9 @@ namespace learningEX
             // 如果已經考慮完所有物品，更新最大獲利並返回
             if (level == items.Count)
             {
-                maxProfit = Math.Max(maxProfit, profit);
-                shortcut = level;
+                maxProfit = Math.Max(maxProfit, profit);               
                 weightans =weight;
+                shortcut =level;
                 return new List<int>(); // 返回空列表表示結束遞迴
             }
 
@@ -283,8 +318,9 @@ namespace learningEX
 
             // 如果上界小於等於已知最大值，剪枝
             if (bound <= maxProfit)
+            {                
                 return new List<int>();
-
+            }
             // 考慮將當前物品放入背包
             List<int> selectedItemsInclude = KnapsackBranchAndBound( level + 1, weight + items[level].Weight, profit + items[level].Value, items, capacity, ref maxProfit, allNodes, ref shortcut,ref weightans);
 

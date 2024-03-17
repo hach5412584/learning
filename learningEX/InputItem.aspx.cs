@@ -10,7 +10,7 @@ namespace learningEX
     {
         int itemCount; // 假设用户希望输入N个物品      
         int capacity;// 背包容量
-
+        string message;
         protected void Page_Load(object sender, EventArgs e)
         {
 
@@ -18,11 +18,20 @@ namespace learningEX
 
         protected void ConfirmButton_Click(object sender, EventArgs e)
         {
+            message = null;
             int.TryParse(ITEM.Text, out itemCount);
             int.TryParse(InCapacity.Text, out capacity);
-            Session["ItemCount"] = itemCount;
-            Session["Capacity"] = capacity;
-            Response.Redirect("Writetopic.aspx");
+            if (itemCount > 0 && capacity > 0)
+            {
+                Session["ItemCount"] = itemCount;
+                Session["Capacity"] = capacity;
+                Response.Redirect("Writetopic.aspx");
+            }            
+            else if (itemCount <= 0 || capacity <= 0)
+            {
+                message = "※輸入錯誤 必須大於0 請重新輸入";
+            }
+            lblMessage.Text = message;
         }
 
 

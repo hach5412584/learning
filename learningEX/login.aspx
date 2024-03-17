@@ -59,7 +59,7 @@
                     data: JSON.stringify({ username: username, password: password }),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
-                    success: function(response) {
+                    success: function(response) { 
                         if (response.d) {
                             alert("登錄成功");
                         } else {

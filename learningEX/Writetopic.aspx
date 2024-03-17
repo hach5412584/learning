@@ -17,6 +17,7 @@
             <asp:Panel ID="ItemPanel" runat="server">
                 <!-- 在此处动态生成输入框 -->
             </asp:Panel>
+            <div><asp:Label ID="lblMessage" runat="server" CssClass="mt-3" Text="" ForeColor="Red"></asp:Label></div>
             <input type="button" id="btnPrev" runat="server" class="btn btn-primary" value="提交"  onserverclick="SubmitButton_Click" />
         </div>
     </form>

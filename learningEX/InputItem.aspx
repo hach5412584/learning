@@ -20,6 +20,7 @@
             <div class="mb-3">
                 <label for="ITEM" class="form-label">項目數量</label>
                 <asp:TextBox ID="ITEM" runat="server" CssClass="form-control"></asp:TextBox>
+                <asp:Label ID="lblMessage" runat="server" CssClass="mt-3" Text="" ForeColor="Red"></asp:Label>
             </div>
             <asp:Button ID="ConfirmButton" runat="server" Text="確認" CssClass="btn btn-primary" OnClick="ConfirmButton_Click" />
         </div>
