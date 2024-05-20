@@ -16,12 +16,14 @@
                 <Columns>
                     <asp:TemplateField HeaderText="題目名稱">
                         <ItemTemplate>
-                            <a href='<%# "topic.aspx?topicname=" + Eval("Topicname") + "&topictype=" + Eval("Topictype") %>'>
+                            <a href='<%# "topic.aspx?topicname=" + Eval("Topicname") + "&topictype=" + Eval("Topictype") + "&topiccategory=" + Eval("TopicCategory") + "&topicsubcategory=" + Eval("TopicSubcategory") %>'>
                                 <asp:Label ID="lblTopicName" runat="server" Text='<%# Eval("Topicname") %>'></asp:Label>
                             </a>
                         </ItemTemplate>
                     </asp:TemplateField>
                     <asp:BoundField DataField="Topictype" HeaderText="題目類型" SortExpression="Topictype" />
+                    <asp:BoundField DataField="TopicCategory" HeaderText="題目類別" SortExpression="TopicCategory" />
+                    <asp:BoundField DataField="TopicSubcategory" HeaderText="題目子類別" SortExpression="TopicSubcategory" />
                 </Columns>
             </asp:GridView>
         </div>

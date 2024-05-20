@@ -16,6 +16,8 @@ namespace learningEX
         string ConnectionString = "Data Source=DESKTOP-VLAJAD1;Initial Catalog=TopicDatabase;User Id=test;Password=;";
         string topicname = "NULL";
         string topictype = "NULL";
+        string topiccategory = "NULL";
+        string topicsubcategory = "NULL";
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -26,8 +28,12 @@ namespace learningEX
                 ViewState["QuestionResults"] = new Dictionary<string, bool>(); // 初始化題目正確與否的 Dictionary
                 topicname = Request.QueryString["topicname"];
                 topictype = Request.QueryString["topictype"];
+                topiccategory = Request.QueryString["topiccategory"];
+                topicsubcategory = Request.QueryString["topicsubcategory"];
                 Session["topicname"] = topicname;
-                Session["topictype"] = topictype;              
+                Session["topictype"] = topictype;
+                Session["topiccategory"] = topiccategory;
+                Session["topicsubcategory"] = topicsubcategory;
                 TakeQuestion();                  
                 Session["Correctcount"] = 0;
                 if (topicname == "BranchandBound1" && Session["question_items"] != null && Session["answers_list"] != null)

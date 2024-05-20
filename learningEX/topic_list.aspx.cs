@@ -41,7 +41,7 @@ namespace learningEX
                 connection.Open();
 
                 // 使用參數化查詢以防 SQL 注入
-                string query = "SELECT Topictype, Topicname FROM TopicNum WHERE Topictype = @Topictype";
+                string query = "SELECT Topictype, Topicname, TopicCategory, TopicSubcategory FROM TopicNum WHERE Topictype = @Topictype";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@Topictype", questionType);
 

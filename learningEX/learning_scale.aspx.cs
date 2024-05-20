@@ -24,6 +24,8 @@ namespace learningEX
             string topicname = HttpContext.Current.Session["topicname"].ToString();
             int userID = Convert.ToInt32(HttpContext.Current.Session["UserID"]);
             string topicType = HttpContext.Current.Session["topictype"].ToString();
+            string TopicCategory = HttpContext.Current.Session["topiccategory"].ToString();
+            string TopicSubcategory = HttpContext.Current.Session["topicsubcategory"].ToString();
             // 建立與資料庫的連接
             using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             {
@@ -54,8 +56,8 @@ namespace learningEX
                 connection.Open();
 
                 // 建立 SQL 指令
-                string query = "INSERT INTO UserAnswerHistory (UserID, AnswerDate, TopicName, HistoricalAnswers, Accuracy, topicType) " +
-                               "VALUES (@UserID, @AnswerDate, @TopicName, @HistoricalAnswers, @Accuracy, @topicType)";
+                string query = "INSERT INTO UserAnswerHistory (UserID, AnswerDate, TopicName, HistoricalAnswers, Accuracy, topicType, TopicCategory, TopicSubcategory) " +
+                               "VALUES (@UserID, @AnswerDate, @TopicName, @HistoricalAnswers, @Accuracy, @topicType, @TopicCategory, @TopicSubcategory)";
 
                 SqlCommand cmd = new SqlCommand(query, connection);
                 DateTime now = DateTime.Now;
@@ -68,11 +70,14 @@ namespace learningEX
                 cmd.Parameters.AddWithValue("@HistoricalAnswers", json);
                 cmd.Parameters.AddWithValue("@Accuracy", Accuracy);
                 cmd.Parameters.AddWithValue("@Topictype", topicType);
+                cmd.Parameters.AddWithValue("@TopicCategory", TopicCategory);
+                cmd.Parameters.AddWithValue("@TopicSubcategory", TopicSubcategory);
 
                 HttpContext.Current.Session.Remove("Accuracy");
                 HttpContext.Current.Session.Remove("answerResults");
                 HttpContext.Current.Session.Remove("topicname");
-                HttpContext.Current.Session.Remove("topicType");
+                HttpContext.Current.Session.Remove("topiccategory");
+                HttpContext.Current.Session.Remove("topicsubcategory");
                 // 執行 SQL 指令
                 cmd.ExecuteNonQuery();
 

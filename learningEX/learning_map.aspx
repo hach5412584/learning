@@ -10,7 +10,7 @@
     <!-- 引入 Bootstrap 的 CSS 文件 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <form id="form1" runat="server">
@@ -53,32 +53,242 @@
                 </ul>
             </div>
         </nav>
-        <canvas id="myChart" width="400" height="400"></canvas>
+        <div class="container mt-5">
+            <div class="row">
+                <!-- 左側部分 -->
+                <div class="col-md-6">
+                    <canvas id="myChart" width="1600" height="800"></canvas>
+                </div>
+                <!-- 右側部分 -->
+                <div class="col-md-6">
+                    <!-- 上半部分 -->
+                    <div class="row">
+                        <div class="col-md-12" id="barChartContainer" style="display: none;">
+                            <canvas id="myChartTopRight" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                    <!-- 下半部分 -->
+                    <div class="row">
+                        <div class="col-md-12" id="BottombarChartContainer" style="display: none;">
+                            <canvas id="myChartBottomRight" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </form>
     <script>
         var ctx = document.getElementById('myChart').getContext('2d');
         var myChart = new Chart(ctx, {
             type: 'radar',
             data: {
-                labels: ['項目1', '項目2', '項目3', '項目4', '項目5', '項目6'],
+                labels: ['演算法', '影像視覺', '項目3', '項目4', '項目5', '項目6'],
                 datasets: [{
-                    label: '答題正解率',
-                    data: [80, 60, 70, 90, 50, 30], // 根據你的數據提供相應的正解率
+                    label: '平均正確率',
+                    data: [0, 0, 0, 0, 0, 0], // 根據你的數據提供相應的正解率
+                    
                     borderColor: 'rgba(75, 192, 192, 1)',
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                 }]
             },
             options: {
-                responsive: true, // 设置图表为响应式，根据屏幕窗口变化而变化
-                //maintainAspectRatio: false,// 保持图表原有比例
-                scale: {
-                    ticks: {
-                        min: 0,
-                        max: 100,
-                        stepSize: 20
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        ticks: {
+                            min: 0,
+                            max: 100,
+                            stepSize: 20,
+                            font: {
+                                size: 18 // 设置刻度字体大小
+                            }
+                        },
+                        pointLabels: {
+                            font: {
+                                size: 24 // 设置标签字体大小
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: {
+                                size: 24 // 设置图例字体大小
+                            }
+                        }
+                    }
+                },
+                onClick: function (event, elements) {
+                    var activePoints = myChart.getElementsAtEventForMode(event, 'nearest', { intersect: false }, false);
+                    console.log('Click event:', event);
+                    console.log('Elements:', activePoints);
+                    if (activePoints.length) {
+                        var firstPoint = activePoints[0];
+                        var label = myChart.data.labels[firstPoint.index];
+                        console.log('Clicked label:', label);
+                        document.getElementById('barChartContainer').style.display = 'block';
+                        getAccuracyChartTopRight(firstPoint.index);
+                    }
+                }
+
+            }
+        });
+
+        var barCtx = document.getElementById('myChartTopRight').getContext('2d');
+        var myChartTopRight = new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: [], // 可根據需要動態更新
+                datasets: [{
+                    label: '平均正確率',
+                    data: [], // 初始數據
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: {
+                                size: 24
+                            }
+                        }
+                    }
+                },
+                onClick: function (event, elements) {
+                    var activePoints = myChartTopRight.getElementsAtEventForMode(event, 'nearest', { intersect: false }, false);
+                    console.log('Click event:', event);
+                    console.log('Elements:', activePoints);
+                    if (activePoints.length) {
+                        var firstPoint = activePoints[0];
+                        var label = myChartTopRight.data.labels[firstPoint.index];
+                        document.getElementById('BottombarChartContainer').style.display = 'block';
+                        getAccuracyChartBottomRight(firstPoint.index);
                     }
                 }
             }
+        });
+
+        var BottomRightbarCtx = document.getElementById('myChartBottomRight').getContext('2d');
+        var myChartBottomRight = new Chart(BottomRightbarCtx, {
+            type: 'bar',
+            data: {
+                labels: [], // 可根據需要動態更新
+                datasets: [{
+                    label: '平均正確率',
+                    data: [], // 初始數據
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: {
+                                size: 24
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        //today
+        function getAccuracyChartBottomRight(index) {
+            $.ajax({
+                type: "POST",
+                url: "learning_map.aspx/GetAccuracyChartBottomRight",
+                data: JSON.stringify({ index: index }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var accuracyData = response.d;
+                    console.log(accuracyData);
+                    updateBottomRight(accuracyData);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.error('Error:', errorThrown);
+                }
+            });
+        }
+
+        function getAccuracyChartTopRight(index) {
+            $.ajax({
+                type: "POST",
+                url: "learning_map.aspx/GetAccuracyChartTopRight",
+                data: JSON.stringify({ index: index }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var accuracyData = response.d;
+                    console.log(accuracyData);
+                    updateBarChart(accuracyData);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.error('Error:', errorThrown);
+                }
+            });
+        }
+
+        function getAccuracyDataAndUpdateChart() {
+            $.ajax({
+                type: "POST",
+                url: "learning_map.aspx/GetAccuracyData",
+                data: '{}', // 空的 JSON 請求體
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var accuracyArray = response.d;
+                    updateChartWithAccuracy(accuracyArray);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.error('Error:', errorThrown);
+                }
+            });
+        }
+
+        function updateChartWithAccuracy(accuracyData) {
+            myChart.data.datasets[0].data = accuracyData;
+            // 重新繪製圖表
+            myChart.update();
+        }
+
+        function updateBarChart(accuracyData) {
+            myChartTopRight.data.labels = accuracyData.Labels;
+            myChartTopRight.data.datasets[0].data = accuracyData.Data;
+            myChartTopRight.update();
+        }
+
+        function updateBottomRight(accuracyData) {
+            myChartBottomRight.data.labels = accuracyData.Labels;
+            myChartBottomRight.data.datasets[0].data = accuracyData.Data;
+            myChartBottomRight.update();
+        }
+
+        // 在頁面加載時執行
+        $(document).ready(function() {
+            getAccuracyDataAndUpdateChart();
         });
     </script>
 </body>
