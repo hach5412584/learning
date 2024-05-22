@@ -207,8 +207,8 @@ namespace learningEX
             string accuracyString = row.Cells[4].Text;
             // 将 historicalAnswers 字符串反序列化为字典
             Dictionary<string, string> answerResults = JsonConvert.DeserializeObject<Dictionary<string, string>>(historicalAnswers);
-            float accuracy = 0.0f;
-            float.TryParse(accuracyString, out accuracy);
+            double accuracy = 0.0f;
+            double.TryParse(accuracyString, out accuracy);
             // 将反序列化后的字典存储到 Session 中
             Session["answerResults"] = answerResults;
             Session["Accuracy"] = accuracy;
