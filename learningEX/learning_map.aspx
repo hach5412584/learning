@@ -38,6 +38,7 @@
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" href="topic_list.aspx?questionType=Algorithm">演算法</a></li>
                                 <li><a class="dropdown-item" href="topic_list.aspx?questionType=Image recognition">影像辨識</a></li>
+                                <li><a class="dropdown-item" href="ImageRecognition/mainpage.aspx">線上影像處理</a></li>
                             </ul>
                     </li>
                     <li class="nav-item dropdown">

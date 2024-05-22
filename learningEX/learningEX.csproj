@@ -77,6 +77,11 @@
     <Content Include="css\bootstrap.css" />
     <Content Include="css\signin.css" />
     <Content Include="DetailedExplanation.aspx" />
+    <Content Include="ImageRecognition\BandW.aspx" />
+    <Content Include="ImageRecognition\EdgeDetection.aspx" />
+    <Content Include="ImageRecognition\filter.aspx" />
+    <Content Include="ImageRecognition\Grayscale.aspx" />
+    <Content Include="ImageRecognition\mainpage.aspx" />
     <Content Include="InputItem.aspx" />
     <Content Include="learning_map.aspx" />
     <Content Include="learning_scale.aspx" />
@@ -106,6 +111,41 @@
     </Compile>
     <Compile Include="DetailedExplanation.aspx.designer.cs">
       <DependentUpon>DetailedExplanation.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ImageRecognition\BandW.aspx.cs">
+      <DependentUpon>BandW.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ImageRecognition\BandW.aspx.designer.cs">
+      <DependentUpon>BandW.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ImageRecognition\EdgeDetection.aspx.cs">
+      <DependentUpon>EdgeDetection.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ImageRecognition\EdgeDetection.aspx.designer.cs">
+      <DependentUpon>EdgeDetection.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ImageRecognition\filter.aspx.cs">
+      <DependentUpon>filter.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ImageRecognition\filter.aspx.designer.cs">
+      <DependentUpon>filter.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ImageRecognition\Grayscale.aspx.cs">
+      <DependentUpon>Grayscale.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ImageRecognition\Grayscale.aspx.designer.cs">
+      <DependentUpon>Grayscale.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ImageRecognition\mainpage.aspx.cs">
+      <DependentUpon>mainpage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ImageRecognition\mainpage.aspx.designer.cs">
+      <DependentUpon>mainpage.aspx</DependentUpon>
     </Compile>
     <Compile Include="InputItem.aspx.cs">
       <DependentUpon>InputItem.aspx</DependentUpon>
