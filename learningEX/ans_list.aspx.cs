@@ -11,7 +11,8 @@ namespace learningEX
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Request.UrlReferrer != null && Request.UrlReferrer.AbsolutePath.EndsWith("topic.aspx"))
+            // Request.UrlReferrer != null && Request.UrlReferrer.AbsolutePath.EndsWith("topic.aspx") || 
+            if (Session["topic_cilck"] != null)
             {
                 // 如果是从 topic.aspx 跳转过来的，显示按钮
                 btnGoToSurvey.Visible = true;

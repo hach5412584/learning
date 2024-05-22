@@ -81,6 +81,8 @@ namespace learningEX
                 HttpContext.Current.Session.Remove("topicname");
                 HttpContext.Current.Session.Remove("topiccategory");
                 HttpContext.Current.Session.Remove("topicsubcategory");
+                HttpContext.Current.Session.Remove("topic_cilck");
+                
                 // 執行 SQL 指令
                 cmd.ExecuteNonQuery();
 

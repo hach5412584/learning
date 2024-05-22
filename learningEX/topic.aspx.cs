@@ -298,6 +298,7 @@ namespace learningEX
                 Accuracy = Math.Round(Accuracy, 2);
                 Session.Remove("Correctcount");
                 Session["Accuracy"] = Accuracy;
+                Session["topic_cilck"] = 1;
                 Response.Redirect("~/ans_list.aspx");
             }
             inputAns.Text = "";

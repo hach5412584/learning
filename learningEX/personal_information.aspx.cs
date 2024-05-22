@@ -16,6 +16,7 @@ namespace learningEX
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            HttpContext.Current.Session.Remove("topic_cilck");
             if (!IsPostBack)
             {
                 // 在這裡編寫檢索使用者資料的邏輯
