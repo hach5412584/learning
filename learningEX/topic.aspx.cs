@@ -294,7 +294,8 @@ namespace learningEX
                     }
                 }
                 float count_out = Convert.ToInt32(Session["Correctcount"]);
-                float Accuracy = (count_out / totalPages) * 100;
+                double Accuracy = ((double)count_out / totalPages) * 100;
+                Accuracy = Math.Round(Accuracy, 2);
                 Session.Remove("Correctcount");
                 Session["Accuracy"] = Accuracy;
                 Response.Redirect("~/ans_list.aspx");

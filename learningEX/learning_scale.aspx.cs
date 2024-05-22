@@ -17,10 +17,10 @@ namespace learningEX
         {
         }
         [WebMethod]
-        public static void SubmitFeedback(string rating, string difficulty, string satisfaction, string intention, string suggestion)
+        public static void SubmitFeedback(string new_content, string curiosity, string try_to_understand, string learn_something, string Good_results, string improve_average, string Beat_most_students, string show_my_ability)
         {
             Dictionary<string, string> answerResults = HttpContext.Current.Session["answerResults"] as Dictionary<string, string>;
-            float Accuracy = (float)HttpContext.Current.Session["Accuracy"];
+            double Accuracy = (double)HttpContext.Current.Session["Accuracy"];
             string topicname = HttpContext.Current.Session["topicname"].ToString();
             int userID = Convert.ToInt32(HttpContext.Current.Session["UserID"]);
             string topicType = HttpContext.Current.Session["topictype"].ToString();
@@ -32,18 +32,21 @@ namespace learningEX
                 connection.Open();
 
                 // 建立 SQL 指令
-                string query = "INSERT INTO LearningFeedback (UserID, LearningEffect, DifficultyLevel, Satisfaction, LearningInterest, Suggestions) " +
-                               "VALUES (@UserID, @LearningEffect, @DifficultyLevel, @Satisfaction, @LearningInterest, @Suggestions)";
+                string query = "INSERT INTO LearningFeedback (UserID, new_content, curiosity, try_to_understand, learn_something, Good_results, improve_average, Beat_most_students, show_my_ability) " +
+                               "VALUES (@UserID, @new_content, @curiosity, @try_to_understand, @learn_something, @Good_results, @improve_average, @Beat_most_students, @show_my_ability)";
 
                 SqlCommand cmd = new SqlCommand(query, connection);
 
                 // 加入參數
                 cmd.Parameters.AddWithValue("@UserID", userID);
-                cmd.Parameters.AddWithValue("@LearningEffect", Convert.ToInt32(rating));
-                cmd.Parameters.AddWithValue("@DifficultyLevel", Convert.ToInt32(difficulty));
-                cmd.Parameters.AddWithValue("@Satisfaction", Convert.ToInt32(satisfaction));
-                cmd.Parameters.AddWithValue("@LearningInterest", Convert.ToInt32(intention));
-                cmd.Parameters.AddWithValue("@Suggestions", suggestion);
+                cmd.Parameters.AddWithValue("@new_content", Convert.ToInt32(new_content));
+                cmd.Parameters.AddWithValue("@curiosity", Convert.ToInt32(curiosity));
+                cmd.Parameters.AddWithValue("@try_to_understand", Convert.ToInt32(try_to_understand));
+                cmd.Parameters.AddWithValue("@learn_something", Convert.ToInt32(learn_something));
+                cmd.Parameters.AddWithValue("@Good_results", Convert.ToInt32(Good_results));
+                cmd.Parameters.AddWithValue("@improve_average", Convert.ToInt32(improve_average));
+                cmd.Parameters.AddWithValue("@Beat_most_students", Convert.ToInt32(Beat_most_students));
+                cmd.Parameters.AddWithValue("@show_my_ability", Convert.ToInt32(show_my_ability));
 
                 // 執行 SQL 指令
                 cmd.ExecuteNonQuery();

@@ -43,8 +43,8 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">自動出題</a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="#">演算法類型</a></li>
-                                <li><a class="dropdown-item" href="#">影像辨識類型</a></li>
+                                <li><a class="dropdown-item" href="#" id="algorithmType">演算法類型</a></li>
+                                <li><a class="dropdown-item" href="#" id="imageRecognitionType">影像辨識類型</a></li>
                             </ul>
                     </li>
                     <li class="nav-item">
@@ -290,6 +290,40 @@
         $(document).ready(function() {
             getAccuracyDataAndUpdateChart();
         });
+
+        $(document).ready(function() {
+            $('#algorithmType').on('click', function(e) {
+                e.preventDefault();
+                getWeakestTopicsQuestion('Algorithm');
+            });
+
+            $('#imageRecognitionType').on('click', function(e) {
+                e.preventDefault();
+                getWeakestTopicsQuestion('Image recognition');
+            });
+        });
+
+        function getWeakestTopicsQuestion(questionType) {
+            $.ajax({
+                type: "POST",
+                url: "learning_map.aspx/GetWeakestTopicsQuestion",
+                data: JSON.stringify({ questionType: questionType }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(data) {
+                    if (data) {
+                         var topicData = JSON.parse(data.d);
+                        // 跳转到出题页面，假设出题页面的 URL 模板为 "question_page.aspx?topic={topicName}"
+                        window.location.href = "topic.aspx?topicname=" + encodeURIComponent(topicData.TopicName) + "&topictype=" + encodeURIComponent(questionType) + "&topiccategory=" + encodeURIComponent(topicData.TopicCategory) + "&topicsubcategory=" + encodeURIComponent(topicData.TopicSubcategory);
+                    } else {
+                        alert('无法获取最弱的题目类型，请稍后再试。');
+                    }
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    console.error('Error:', errorThrown);
+                }
+            });
+        }
     </script>
 </body>
 </html>

@@ -8,6 +8,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Configuration;
 using System.Web.Services;
+using System.Web.Script.Serialization;
 
 namespace learningEX
 {
@@ -165,6 +166,51 @@ namespace learningEX
             return accuracyData_Bot;
         }
 
+        [WebMethod]
+        public static string GetWeakestTopicsQuestion(string questionType)
+        {
+            string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            List<Dictionary<string, string>> weakestTopics = new List<Dictionary<string, string>>();
+
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = @"
+                SELECT TOP 3 TopicName, TopicCategory, TopicSubcategory
+                FROM UserAnswerHistory
+                WHERE Topictype = @QuestionType
+                GROUP BY TopicName, TopicCategory, TopicSubcategory
+                ORDER BY AVG(Accuracy) ASC";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@QuestionType", questionType);
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    var topicData = new Dictionary<string, string>
+                    {
+                        { "TopicName", reader["TopicName"].ToString() },
+                        { "TopicCategory", reader["TopicCategory"].ToString() },
+                        { "TopicSubcategory", reader["TopicSubcategory"].ToString() }
+                    };
+                    weakestTopics.Add(topicData);
+                }
+            }
+
+            if (weakestTopics.Count > 0)
+            {
+                Random random = new Random();
+                int index = random.Next(weakestTopics.Count);
+                var selectedTopic = weakestTopics[index];
+                JavaScriptSerializer js = new JavaScriptSerializer();
+                return js.Serialize(selectedTopic);
+            }
+
+            return null;
+        }
 
     }
 }

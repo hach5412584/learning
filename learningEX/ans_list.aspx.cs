@@ -25,7 +25,7 @@ namespace learningEX
             }
             // 獲取在 topic.aspx 中回答的小題資料（示例中假設你有一個方法 GetAnswerList 返回這些資料）
             Dictionary<string, string> answerResults = Session["answerResults"] as Dictionary<string, string>;
-            float Accuracy = (float)Session["Accuracy"];
+            double Accuracy = (double)Session["Accuracy"];
 
             lblMessage.Text = "正確率："+ Accuracy.ToString() + "%";
             // 判斷 Session 中是否有資料
