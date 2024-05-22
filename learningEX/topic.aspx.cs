@@ -36,7 +36,7 @@ namespace learningEX
                 Session["topicsubcategory"] = topicsubcategory;
                 TakeQuestion();                  
                 Session["Correctcount"] = 0;
-                if (topicname == "BranchandBound1" && Session["question_items"] != null && Session["answers_list"] != null)
+                if (topicname == "BranchandBound" && Session["question_items"] != null && Session["answers_list"] != null)
                 {
                     List<string> answers = Session["answers_list"] as List<string>;                  
                     List<Writetopic.Item> questionItems = Session["question_items"] as List<Writetopic.Item>;
