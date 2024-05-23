@@ -299,9 +299,12 @@ namespace learningEX
                 Session.Remove("Correctcount");
                 Session["Accuracy"] = Accuracy;
                 Session["topic_cilck"] = 1;
-                Session.Remove("question_items");
-                Session.Remove("question_capacity");
-                Session.Remove("answers_list");
+                if (Session["answers_list"] != null)
+                {
+                    Session.Remove("question_items");
+                    Session.Remove("question_capacity");
+                    Session.Remove("answers_list");
+                }
                 Response.Redirect("~/ans_list.aspx");
             }
             inputAns.Text = "";
