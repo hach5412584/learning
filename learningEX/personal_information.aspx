@@ -140,7 +140,7 @@
             <!-- 答案歷史表格 -->
             <asp:GridView ID="gvAnswerHistory" runat="server" AutoGenerateColumns="False" CssClass="table table-bordered">
                 <Columns>
-                    <asp:BoundField DataField="AnswerDate" HeaderText="作答日期" />
+                    <asp:BoundField DataField="AnswerDate" HeaderText="作答日期" DataFormatString="{0:yyyy-MM-dd}" HtmlEncode="false" />
                     <asp:TemplateField HeaderText="題目名稱">
                         <ItemTemplate>
                             <a href='<%# "topic.aspx?topicname=" + Eval("Topicname") + "&topictype=" + Eval("Topictype") %>'>

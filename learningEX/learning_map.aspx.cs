@@ -12,11 +12,6 @@ using System.Web.Script.Serialization;
 
 namespace learningEX
 {
-    public class AccuracyData
-    {
-        public List<string> Labels { get; set; }
-        public List<double> Data { get; set; }
-    }
 
     public partial class learningmap : System.Web.UI.Page
     {
@@ -40,7 +35,7 @@ namespace learningEX
             // 連接資料庫並執行查詢
             using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             {
-                string query = "SELECT AVG(Accuracy) AS AverageAccuracy FROM UserAnswerHistory WHERE Topictype = 'Algorithm'";
+                string query = "SELECT Topictype, AVG(Accuracy) AS AverageAccuracy FROM UserAnswerHistory GROUP BY Topictype";
                 SqlCommand command = new SqlCommand(query, connection);
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
@@ -56,12 +51,9 @@ namespace learningEX
             return accuracyData;
         }
         [WebMethod]
-        public static AccuracyData GetAccuracyChartTopRight(int index)
+        public static List<Dictionary<string, object>> GetAccuracyChartTopRight(int index)
         {
-            AccuracyData accuracyData = new AccuracyData();
-            accuracyData.Labels = new List<string>();
-            accuracyData.Data = new List<double>();
-
+            List<Dictionary<string, object>> Topic_all = new List<Dictionary<string, object>>();
             string topicType = "";
 
             // 根据 index 设置不同的 topicType
@@ -79,91 +71,95 @@ namespace learningEX
                     break;
             }
 
-            HttpContext.Current.Session["labeltype"] = topicType;
-
             using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             {
-                string query = "SELECT TopicCategory, AVG(Accuracy) AS AverageAccuracy FROM UserAnswerHistory WHERE Topictype = @TopicType GROUP BY TopicCategory";
+                string query = @"
+                    WITH AllScores AS (
+                        SELECT
+                            TopicCategory,
+                            Accuracy
+                        FROM
+                            UserAnswerHistory
+                        WHERE
+                            TopicType = @TopicType
+                    )
+                    SELECT
+                        TopicCategory,
+                        AVG(Accuracy) AS AvgAccuracy,
+                        COUNT(*) AS AnswerCount
+                    FROM
+                        AllScores
+                    GROUP BY TopicCategory;";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@TopicType", topicType);
+
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
+
                 while (reader.Read())
                 {
-                    accuracyData.Labels.Add(reader["TopicCategory"].ToString());
-                    accuracyData.Data.Add(Math.Round(Convert.ToDouble(reader["AverageAccuracy"]), 2));
+                    var record = new Dictionary<string, object>
+                    {
+                        { "TopicCategory", reader["TopicCategory"].ToString() },
+                        { "AvgAccuracy", Convert.ToDouble(reader["AvgAccuracy"]) },
+                        { "AnswerCount", Convert.ToInt32(reader["AnswerCount"]) }
+                    };
+                    Topic_all.Add(record);
                 }
                 reader.Close();
             }
 
-            return accuracyData;
+            return Topic_all;
         }
 
 
         [WebMethod]
-        public static AccuracyData GetAccuracyChartBottomRight(int index)
+        public static List<Dictionary<string, object>> GetAccuracyChartBottomRight(string index)
         {
-            AccuracyData accuracyData_Bot = new AccuracyData();
-            accuracyData_Bot.Labels = new List<string>();
-            accuracyData_Bot.Data = new List<double>();
-            string topicType = HttpContext.Current.Session["labeltype"].ToString(); ;
-            string TopicCategory = "";
-            switch (topicType)
-            {
-                case "Algorithm":
-                    switch (index)
-                    {
-                        case 0:
-                            TopicCategory = "Divide and conquer";
-                            break;
-                        case 1:
-                            TopicCategory = "";
-                            break;
-                        case 2:
-                            TopicCategory = "";
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case "ImageRecognition":
-                    switch (index)
-                    {
-                        case 0:
-                            TopicCategory = "";
-                            break;
-                        case 1:
-                            TopicCategory = "";
-                            break;
-                        case 2:
-                            TopicCategory = "";
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                // 添加其他 case 处理不同的 index 值
-                default:
-                    topicType = "DefaultTopic";
-                    break;
-            }
+            List<Dictionary<string, object>> TopicCategory_all = new List<Dictionary<string, object>>();
+
+            string TopicCategory = index;
 
             using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             {
-                string query = "SELECT TopicSubcategory, AVG(Accuracy) AS AverageAccuracy FROM UserAnswerHistory WHERE TopicCategory = @TopicCategory GROUP BY TopicSubcategory";
+                string query = @"
+                    WITH AllScores AS (
+                        SELECT
+                            TopicSubcategory,
+                            Accuracy
+                        FROM
+                            UserAnswerHistory
+                        WHERE
+                            TopicCategory = @TopicCategory
+                    )
+                    SELECT
+                        TopicSubcategory,
+                        AVG(Accuracy) AS AvgAccuracy,
+                        COUNT(*) AS AnswerCount
+                    FROM
+                        AllScores
+                    GROUP BY TopicSubcategory;";
+
                 SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@TopicCategory", TopicCategory);
+                command.Parameters.AddWithValue("@TopicCategory", index);
+
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
+
                 while (reader.Read())
                 {
-                    accuracyData_Bot.Labels.Add(reader["TopicSubcategory"].ToString());
-                    accuracyData_Bot.Data.Add(Math.Round(Convert.ToDouble(reader["AverageAccuracy"]), 2));
+                    var record = new Dictionary<string, object>
+                    {
+                        { "TopicSubcategory", reader["TopicSubcategory"].ToString() },
+                        { "AvgAccuracy", Convert.ToDouble(reader["AvgAccuracy"]) },
+                        { "AnswerCount", Convert.ToInt32(reader["AnswerCount"]) }
+                    };
+                    TopicCategory_all.Add(record);
                 }
                 reader.Close();
             }
 
-            return accuracyData_Bot;
+            return TopicCategory_all;
         }
 
         [WebMethod]
@@ -210,6 +206,54 @@ namespace learningEX
             }
 
             return null;
+        }
+        [WebMethod]
+        public static List<Dictionary<string, object>> GetAccuracyChartBottom(string index)
+        {  
+            List<Dictionary<string, object>> latestFiveScores = new List<Dictionary<string, object>>();
+
+            string TopicSubcategory = index;
+
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            {
+                string query = @"
+                    WITH LatestFiveScores AS (
+                        SELECT
+                            TopicSubcategory,
+                            Accuracy,
+                            ROW_NUMBER() OVER (PARTITION BY TopicSubcategory ORDER BY AnswerDate DESC) AS RowNum
+                        FROM
+                            UserAnswerHistory
+                        WHERE
+                            TopicSubcategory = @TopicSubcategory
+                    )
+                    SELECT
+                        TopicSubcategory,
+                        Accuracy
+                    FROM
+                        LatestFiveScores
+                    WHERE
+                        RowNum <= 5;";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@TopicSubcategory", index);
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    var record = new Dictionary<string, object>
+                    {
+                        { "TopicSubcategory", reader["TopicSubcategory"].ToString() },
+                        { "Accuracy", reader["Accuracy"] }
+                    };
+                    latestFiveScores.Add(record);
+                }
+                reader.Close();
+            }
+
+            return latestFiveScores;
         }
 
     }

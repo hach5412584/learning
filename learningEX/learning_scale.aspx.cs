@@ -32,8 +32,8 @@ namespace learningEX
                 connection.Open();
 
                 // 建立 SQL 指令
-                string query = "INSERT INTO LearningFeedback (UserID, new_content, curiosity, try_to_understand, learn_something, Good_results, improve_average, Beat_most_students, show_my_ability) " +
-                               "VALUES (@UserID, @new_content, @curiosity, @try_to_understand, @learn_something, @Good_results, @improve_average, @Beat_most_students, @show_my_ability)";
+                string query = "INSERT INTO LearningFeedback (UserID, new_content, curiosity, try_to_understand, learn_something, Good_results, improve_average, Beat_most_students, show_my_ability, first_time) " +
+                               "VALUES (@UserID, @new_content, @curiosity, @try_to_understand, @learn_something, @Good_results, @improve_average, @Beat_most_students, @show_my_ability, @first_time)";
 
                 SqlCommand cmd = new SqlCommand(query, connection);
 
@@ -47,7 +47,7 @@ namespace learningEX
                 cmd.Parameters.AddWithValue("@improve_average", Convert.ToInt32(improve_average));
                 cmd.Parameters.AddWithValue("@Beat_most_students", Convert.ToInt32(Beat_most_students));
                 cmd.Parameters.AddWithValue("@show_my_ability", Convert.ToInt32(show_my_ability));
-
+                cmd.Parameters.AddWithValue("@first_time", Convert.ToInt32(first_time));
                 // 執行 SQL 指令
                 cmd.ExecuteNonQuery();
 
@@ -59,8 +59,8 @@ namespace learningEX
                 connection.Open();
 
                 // 建立 SQL 指令
-                string query = "INSERT INTO UserAnswerHistory (UserID, AnswerDate, TopicName, HistoricalAnswers, Accuracy, topicType, TopicCategory, TopicSubcategory, first_time) " +
-                               "VALUES (@UserID, @AnswerDate, @TopicName, @HistoricalAnswers, @Accuracy, @topicType, @TopicCategory, @TopicSubcategory, @first_time)";
+                string query = "INSERT INTO UserAnswerHistory (UserID, AnswerDate, TopicName, HistoricalAnswers, Accuracy, topicType, TopicCategory, TopicSubcategory) " +
+                               "VALUES (@UserID, @AnswerDate, @TopicName, @HistoricalAnswers, @Accuracy, @topicType, @TopicCategory, @TopicSubcategory)";
 
                 SqlCommand cmd = new SqlCommand(query, connection);
                 DateTime now = DateTime.Now;
@@ -75,7 +75,7 @@ namespace learningEX
                 cmd.Parameters.AddWithValue("@Topictype", topicType);
                 cmd.Parameters.AddWithValue("@TopicCategory", TopicCategory);
                 cmd.Parameters.AddWithValue("@TopicSubcategory", TopicSubcategory);
-                cmd.Parameters.AddWithValue("@first_time", first_time);
+                
 
                 HttpContext.Current.Session.Remove("Accuracy");
                 HttpContext.Current.Session.Remove("answerResults");
