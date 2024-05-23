@@ -15,7 +15,7 @@ namespace learningEX
             {
                 QuestionID = Request.QueryString["questionID"];
                 TakeQuestion(QuestionID);
-                TakeDetailedExplanationImageandtext(QuestionID);
+                TakeDetailedExplanationImageIDandtext(QuestionID);
                 TakeAns(QuestionID);
             }
         }
@@ -74,7 +74,7 @@ namespace learningEX
             }
         }
 
-        private void TakeDetailedExplanationImageandtext(string questionID)
+        private void TakeDetailedExplanationImageIDandtext(string questionID)
         {
             try
             {
@@ -83,7 +83,7 @@ namespace learningEX
                     connection.Open();
 
                     // 使用参数化查询以防止SQL注入
-                    string query = "SELECT DetailedExplanationImage, DetailedExplanationText FROM dbo.TopicAns WHERE questionID = @QuestionID";
+                    string query = "SELECT DetailedExplanationImageID, DetailedExplanationText FROM dbo.TopicAns WHERE questionID = @QuestionID";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
@@ -95,20 +95,57 @@ namespace learningEX
                         {
                             if (reader.Read())
                             {
-                                // 取得二進位圖片資料
-                                byte[] detailedExplanationImageData = (byte[])reader["DetailedExplanationImage"];
-
-                                // 轉換二進位圖片資料為 Base64 字串
-                                string detailedExplanationImageBase64 = Convert.ToBase64String(detailedExplanationImageData);
-                                imgTopic.ImageUrl = "data:image/jpeg;base64," + detailedExplanationImageBase64;
-
+                                takeImage(reader["DetailedExplanationImageID"].ToString());
+                                
                                 // 取得文字描述
                                 string detailedExplanationText = reader["DetailedExplanationText"].ToString();
                                 detailedexplanationtext.InnerText = detailedExplanationText;
 
                                 // 在這裡你可以使用這些值，例如，將它們設置給後端的變數或進行其他處理
                                 Debug.WriteLine($"DetailedExplanationText: {detailedExplanationText}");
+                            }
+                            else
+                            {
+                                Debug.WriteLine("No matching record found.");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Error: " + ex.Message);
+                // 处理异常
+            }
+        }
 
+        private void takeImage(string ImageID)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(ConnectionString))
+                {
+                    connection.Open();
+
+                    // 使用参数化查询以防止SQL注入
+                    string query = "SELECT Image FROM dbo.TopicImage WHERE ImageID = @ImageID";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        // 添加参数
+                        command.Parameters.AddWithValue("@ImageID",ImageID);
+
+                        // 执行查询
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                // 取得二進位圖片資料
+                                byte[] detailedExplanationImageData = (byte[])reader["Image"];
+
+                                // 轉換二進位圖片資料為 Base64 字串
+                                string detailedExplanationImageBase64 = Convert.ToBase64String(detailedExplanationImageData);
+                                imgTopic.ImageUrl = "data:image/jpeg;base64," + detailedExplanationImageBase64;
                                 // 將圖片 Base64 字串傳遞到前端，這樣你可以在前端使用它
                                 Page.ClientScript.RegisterStartupScript(this.GetType(), "ShowImage", $"showImage('{detailedExplanationImageBase64}');", true);
 

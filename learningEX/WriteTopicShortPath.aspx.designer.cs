@@ -10,7 +10,7 @@
 namespace learningEX {
     
     
-    public partial class InputItem {
+    public partial class WriteTopicShortPath {
         
         /// <summary>
         /// form1 控制項。
@@ -22,84 +22,57 @@ namespace learningEX {
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
         
         /// <summary>
-        /// Div1 控制項。
+        /// VertexInputPlaceHolder 控制項。
         /// </summary>
         /// <remarks>
         /// 自動產生的欄位。
         /// 若要修改，請將欄位宣告從設計工具檔案移到程式碼後置檔案。
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel Div1;
+        protected global::System.Web.UI.WebControls.PlaceHolder VertexInputPlaceHolder;
         
         /// <summary>
-        /// InCapacity 控制項。
+        /// AddVertexButton 控制項。
         /// </summary>
         /// <remarks>
         /// 自動產生的欄位。
         /// 若要修改，請將欄位宣告從設計工具檔案移到程式碼後置檔案。
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox InCapacity;
+        protected global::System.Web.UI.WebControls.Button AddVertexButton;
         
         /// <summary>
-        /// ITEM1 控制項。
+        /// AddVertexResultLabel 控制項。
         /// </summary>
         /// <remarks>
         /// 自動產生的欄位。
         /// 若要修改，請將欄位宣告從設計工具檔案移到程式碼後置檔案。
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox ITEM1;
+        protected global::System.Web.UI.WebControls.Label AddVertexResultLabel;
         
         /// <summary>
-        /// lblMessage1 控制項。
+        /// ShortestPathResultLabel 控制項。
         /// </summary>
         /// <remarks>
         /// 自動產生的欄位。
         /// 若要修改，請將欄位宣告從設計工具檔案移到程式碼後置檔案。
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblMessage1;
+        protected global::System.Web.UI.WebControls.Label ShortestPathResultLabel;
         
         /// <summary>
-        /// Div2 控制項。
+        /// ShowLogButton 控制項。
         /// </summary>
         /// <remarks>
         /// 自動產生的欄位。
         /// 若要修改，請將欄位宣告從設計工具檔案移到程式碼後置檔案。
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel Div2;
+        protected global::System.Web.UI.WebControls.Button ShowLogButton;
         
         /// <summary>
-        /// ITEM2 控制項。
+        /// LogLabel 控制項。
         /// </summary>
         /// <remarks>
         /// 自動產生的欄位。
         /// 若要修改，請將欄位宣告從設計工具檔案移到程式碼後置檔案。
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox ITEM2;
-        
-        /// <summary>
-        /// lblMessage2 控制項。
-        /// </summary>
-        /// <remarks>
-        /// 自動產生的欄位。
-        /// 若要修改，請將欄位宣告從設計工具檔案移到程式碼後置檔案。
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblMessage2;
-        
-        /// <summary>
-        /// lblMessage 控制項。
-        /// </summary>
-        /// <remarks>
-        /// 自動產生的欄位。
-        /// 若要修改，請將欄位宣告從設計工具檔案移到程式碼後置檔案。
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblMessage;
-        
-        /// <summary>
-        /// ConfirmButton 控制項。
-        /// </summary>
-        /// <remarks>
-        /// 自動產生的欄位。
-        /// 若要修改，請將欄位宣告從設計工具檔案移到程式碼後置檔案。
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button ConfirmButton;
+        protected global::System.Web.UI.WebControls.Label LogLabel;
     }
 }

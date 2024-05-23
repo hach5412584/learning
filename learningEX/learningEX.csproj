@@ -96,6 +96,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Writetopic.aspx" />
+    <Content Include="WriteTopicShortPath.aspx" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ans_list.aspx.cs">
@@ -224,6 +225,13 @@
     </Compile>
     <Compile Include="Writetopic.aspx.designer.cs">
       <DependentUpon>Writetopic.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="WriteTopicShortPath.aspx.cs">
+      <DependentUpon>WriteTopicShortPath.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="WriteTopicShortPath.aspx.designer.cs">
+      <DependentUpon>WriteTopicShortPath.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

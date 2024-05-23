@@ -34,7 +34,9 @@ namespace learningEX
                 Session["topictype"] = topictype;
                 Session["topiccategory"] = topiccategory;
                 Session["topicsubcategory"] = topicsubcategory;
-                TakeQuestion();                  
+                TakeID();
+                TakeQuestion();
+                Session["TopicID"] = ViewState["TopicID"] as string;
                 Session["Correctcount"] = 0;
                 /* if (Session["question_items"] != null && Session["answers_list"] != null)
                 {
@@ -117,6 +119,13 @@ namespace learningEX
             {
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
+                    List<string[]> userinputdata = Session["UserInputData"] as List<string[]>; //表格
+                    List<string> Userinputscope = Session["UserInputsCope"] as List<string>;
+
+                    List<List<string>> table = Session["table"] as List<List<string>>;
+                    var log = (List<Tuple<string, string>>)Session["log"];
+                    var anslist = (List<string>)Session["anslist"];
+
                     connection.Open();
                     TakeID();
                     string topicID = ViewState["TopicID"] as string;
@@ -130,8 +139,6 @@ namespace learningEX
                     int offset = currentPage * pageSize;
                     // 使用参数化查询以防止 SQL 注入
                     string query = "SELECT ImageID, questionID, Questiondata FROM dbo.TopicQuestion WHERE ID = @TopicID ORDER BY (SELECT NULL) OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
-                    List<string[]> userinputdata = Session["UserInputData"] as List<string[]>; //表格
-                    List<string> Userinputscope = Session["UserInputsCope"] as List<string>;
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
@@ -149,32 +156,50 @@ namespace learningEX
 
                                 ViewState["QuestionID"] = questionID;
                                 questiondata.InnerText = questionData;
-                                if (Session["UserInputData"] == null)
+
+                                if (topicID.Trim() == "1" && userinputdata != null)
                                 {
-                                    TakeImage(topicID, imageID);
+                                    foreach (var item in userinputdata)
+                                    {
+                                        TableRow row = new TableRow();
+                                        foreach (var value in item)
+                                        {
+                                            TableCell cell = new TableCell();
+                                            cell.Text = value;
+                                            row.Cells.Add(cell);
+                                        }
+                                        dynamicTable.Rows.Add(row);
+                                    }
+                                    foreach (var item in Userinputscope)
+                                    {
+                                        userinputscope.InnerText = item + "\n";
+                                    }
+                                }
+                                else if (topicID.Trim() == "2" && Session["table"] != null)
+                                {
+
+                                    Debug.WriteLine("Table data from Session:");
+                                    foreach (var row in table)
+                                    {
+                                        Debug.WriteLine(string.Join(", ", row));
+                                    }
+                                    for (int i = 0; i < table.Count; i++)
+                                    {
+                                        TableRow row = new TableRow();
+                                        for (int j = 0; j < table[i].Count; j++)
+                                        {
+                                            TableCell cell = new TableCell();
+                                            cell.Text = table[i][j] ?? string.Empty;
+                                            row.Cells.Add(cell);
+                                        }
+                                        dynamicTable.Rows.Add(row);
+                                    }
                                 }
                                 else
                                 {
-                                    if (userinputdata != null)
-                                    {
-                                        // 遍历 userinputdata 并生成表格
-                                        foreach (var item in userinputdata)
-                                        {
-                                            TableRow row = new TableRow();
-                                            foreach (var value in item)
-                                            {
-                                                TableCell cell = new TableCell();
-                                                cell.Text = value;
-                                                row.Cells.Add(cell);
-                                            }
-                                            dynamicTable.Rows.Add(row);
-                                        }
-                                        foreach (var item in Userinputscope)
-                                        {
-                                            userinputscope.InnerText = item + "\n";
-                                        }
-                                    }
+                                    TakeImage(topicID, imageID);
                                 }
+
                                 Debug.WriteLine($" ImageID: {imageID}, questionID: {questionID}, Questiondata: {questionData}");
                             }
                             else
@@ -188,7 +213,6 @@ namespace learningEX
             catch (Exception ex)
             {
                 Debug.WriteLine("Error: " + ex.Message);
-                // 处理异常
             }
         }
 

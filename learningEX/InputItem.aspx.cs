@@ -10,31 +10,60 @@ namespace learningEX
     {
         int itemCount; // 假设用户希望输入N个物品      
         int capacity;// 背包容量
-        string message;
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!IsPostBack)
+            {
+                ViewState["TopicID"] = Session["TopicID"] as string;
+                if (ViewState["TopicID"].ToString().Trim() == "2")
+                {
+                    Session["ItemCount"] = 6;
+                    Response.Redirect("WriteTopicShortPath.aspx");
+                }
+
+
+
+                SetControlVisibility();
+            }
+        }
+        
+        private void SetControlVisibility()
+        {
+
+
+            if (ViewState["TopicID"].ToString() .Trim() == "1")
+            {
+                Div1.Visible = true;
+                Div2.Visible = false;
+            }
+
+            else if (ViewState["TopicID"].ToString().Trim() == "2")
+            {
+                Div1.Visible = false;
+                Div2.Visible = true;
+            }
 
         }
 
         protected void ConfirmButton_Click(object sender, EventArgs e)
         {
-            message = null;
-            int.TryParse(ITEM.Text, out itemCount);
-            int.TryParse(InCapacity.Text, out capacity);
-            if (itemCount > 0 && capacity > 0)
+            if (ViewState["TopicID"].ToString().Trim() == "1")
             {
-                Session["ItemCount"] = itemCount;
-                Session["Capacity"] = capacity;
-                Response.Redirect("Writetopic.aspx");
-            }            
-            else if (itemCount <= 0 || capacity <= 0)
-            {
-                message = "※輸入錯誤 必須大於0 請重新輸入";
-            }
-            lblMessage.Text = message;
+                int.TryParse(ITEM1.Text, out itemCount);
+                int.TryParse(InCapacity.Text, out capacity);
+                if (itemCount > 0 && capacity > 0)
+                {
+                    Session["ItemCount"] = itemCount;
+                    Session["Capacity"] = capacity;
+                    Response.Redirect("Writetopic.aspx");
+                }
+                else if (itemCount <= 0 || capacity <= 0)
+                {
+                    lblMessage.Text = "※輸入錯誤 必須大於0 請重新輸入";
+                }
+            }           
         }
-
-
+        
     }
 }
 
