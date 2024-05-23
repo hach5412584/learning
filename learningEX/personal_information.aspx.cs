@@ -19,6 +19,13 @@ namespace learningEX
             HttpContext.Current.Session.Remove("topic_cilck");
             if (!IsPostBack)
             {
+                if (Session["UserName"] != null && Session["UserID"] != null)
+                {
+                    string username = Session["UserName"].ToString();
+                    string userID = Session["UserID"].ToString();
+                    lblUserName.ForeColor = System.Drawing.Color.Gray;
+                    lblUserName.Text = "歡迎您" + username;
+                }
                 // 在這裡編寫檢索使用者資料的邏輯
                 string userId = Convert.ToString(HttpContext.Current.Session["UserID"]);  // 填入實際的使用者 ID
 

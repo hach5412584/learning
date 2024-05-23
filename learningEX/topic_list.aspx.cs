@@ -16,6 +16,13 @@ namespace learningEX
 		{
             if (!IsPostBack)
             {
+                if (Session["UserName"] != null && Session["UserID"] != null)
+                {
+                    string username = Session["UserName"].ToString();
+                    string userID = Session["UserID"].ToString();
+                    lblUserName.ForeColor = System.Drawing.Color.Gray;
+                    lblUserName.Text = "歡迎您" + username;
+                }
                 string questionType = Request.QueryString["questiontype"];
 
                 if (!string.IsNullOrEmpty(questionType))

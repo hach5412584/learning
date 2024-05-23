@@ -405,7 +405,7 @@
 
             $('#imageRecognitionType').on('click', function(e) {
                 e.preventDefault();
-                getWeakestTopicsQuestion('Image recognition');
+                getWeakestTopicsQuestion('ImageRecognition');
             });
         });
 

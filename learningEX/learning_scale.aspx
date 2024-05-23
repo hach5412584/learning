@@ -318,6 +318,17 @@
     <script>
         $(document).ready(function () {
             $("#submitBtn").click(function (e) {
+                var allChecked = false ; 
+ 
+                if ($('input[type="radio"]:not(:checked)').length == 33) {
+                    allChecked = true; 
+                }
+
+                if (!allChecked) {
+                    alert('請確保所有單選框都被選中後再提交！');
+                    return false;
+                }
+
                 e.preventDefault();
                 var new_content = $("input[name='new_content']:checked").val();
                 var curiosity = $("input[name='curiosity']:checked").val();

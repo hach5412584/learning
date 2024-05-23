@@ -22,6 +22,13 @@ namespace learningEX
         {
             if (!IsPostBack)
             {
+                if (Session["UserName"] != null && Session["UserID"] != null)
+                {
+                    string username = Session["UserName"].ToString();
+                    string userID = Session["UserID"].ToString();
+                    lblUserName.ForeColor = System.Drawing.Color.Gray;
+                    lblUserName.Text = "歡迎您" + username;
+                }
                 //初始化 ViewState["QuestionIndex"]，表示當前題目的索引
                 Session["TopicUrl"] = Request.Url.ToString();
                 ViewState["QuestionIndex"] = 0;
