@@ -36,35 +36,35 @@ namespace learningEX
                 Session["topicsubcategory"] = topicsubcategory;
                 TakeQuestion();                  
                 Session["Correctcount"] = 0;
-                if (topicname == "BranchandBound" && Session["question_items"] != null && Session["answers_list"] != null)
+                /* if (Session["question_items"] != null && Session["answers_list"] != null)
                 {
                     List<string> answers = Session["answers_list"] as List<string>;                  
                     List<Writetopic.Item> questionItems = Session["question_items"] as List<Writetopic.Item>;
-                   /* if (answers != null)
+                   if (answers != null)
                     {
                         foreach (string str in answers)
                         {
                             Label1.Text += "(" + str + "),";
                         }
-                    }*/
-                    if (questionItems != null)
+                    }
+                if (questionItems != null)
                     {
 
                         // 遍歷 questionItems 並生成相應的頁面內容
-                        /*foreach (Writetopic.Item item in questionItems)
+                        foreach (Writetopic.Item item in questionItems)
                         {
                             // 根據 item 的屬性值動態生成頁面內容，例如：
                             Label label = new Label();
                             label.Text = $"Weight: {item.Weight}, Value: {item.Value}";
                             // 將 label 或其他控件添加到頁面中的適當位置
                             form1.Controls.Add(label);
-                        }*/
+                        }
 
                     }                  
                     Session.Remove("question_items");
                     Session.Remove("question_capacity");
                     Session.Remove("answers_list");
-                }
+                }*/
             }
         }
         // 定義 TakeID 方法
@@ -299,6 +299,9 @@ namespace learningEX
                 Session.Remove("Correctcount");
                 Session["Accuracy"] = Accuracy;
                 Session["topic_cilck"] = 1;
+                Session.Remove("question_items");
+                Session.Remove("question_capacity");
+                Session.Remove("answers_list");
                 Response.Redirect("~/ans_list.aspx");
             }
             inputAns.Text = "";
