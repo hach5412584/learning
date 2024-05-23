@@ -28,6 +28,23 @@
     <form id="feedbackForm" runat="server" class="container mt-5">
         <div class="container">
         <div class="question-container">
+            <label class="form-label">你是第一次填寫此表嗎。</label>
+            <div class="row mb-2">
+                <div class="col text-center">是</div>
+                <div class="col text-center">否</div>
+            </div>
+            <div class="row">
+                <div class="col text-center">
+                    <input class="form-check-input" type="radio" name="first_time" id="first_time1" value="1">
+                </div>
+                <div class="col text-center">
+                    <input class="form-check-input" type="radio" name="first_time" id="first_time2" value="0">
+                </div>
+            </div>
+        </div>
+        <hr class="question-divider">
+
+        <div class="question-container">
             <label class="form-label">在演算法這門課程，我喜歡有挑戰性的教材，這樣我就可以學習新的內容。</label>
             <div class="row mb-2">
                 <div class="col-2"></div>
@@ -310,6 +327,7 @@
                 var improve_average = $("input[name='improve_average']:checked").val();
                 var Beat_most_students = $("input[name='Beat_most_students']:checked").val();
                 var show_my_ability = $("input[name='show_my_ability']:checked").val();
+                var first_time = $("input[name='first_time']:checked").val();
                 $.ajax({
                     type: "POST",
                     url: "learning_scale.aspx/SubmitFeedback",
@@ -321,7 +339,8 @@
                         Good_results: Good_results,
                         improve_average: improve_average,
                         Beat_most_students: Beat_most_students,
-                        show_my_ability: show_my_ability
+                        show_my_ability: show_my_ability,
+                        first_time: first_time
                     }),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",

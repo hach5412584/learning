@@ -17,7 +17,7 @@ namespace learningEX
         {
         }
         [WebMethod]
-        public static void SubmitFeedback(string new_content, string curiosity, string try_to_understand, string learn_something, string Good_results, string improve_average, string Beat_most_students, string show_my_ability)
+        public static void SubmitFeedback(string new_content, string curiosity, string try_to_understand, string learn_something, string Good_results, string improve_average, string Beat_most_students, string show_my_ability, string first_time)
         {
             Dictionary<string, string> answerResults = HttpContext.Current.Session["answerResults"] as Dictionary<string, string>;
             double Accuracy = (double)HttpContext.Current.Session["Accuracy"];
@@ -59,8 +59,8 @@ namespace learningEX
                 connection.Open();
 
                 // 建立 SQL 指令
-                string query = "INSERT INTO UserAnswerHistory (UserID, AnswerDate, TopicName, HistoricalAnswers, Accuracy, topicType, TopicCategory, TopicSubcategory) " +
-                               "VALUES (@UserID, @AnswerDate, @TopicName, @HistoricalAnswers, @Accuracy, @topicType, @TopicCategory, @TopicSubcategory)";
+                string query = "INSERT INTO UserAnswerHistory (UserID, AnswerDate, TopicName, HistoricalAnswers, Accuracy, topicType, TopicCategory, TopicSubcategory, first_time) " +
+                               "VALUES (@UserID, @AnswerDate, @TopicName, @HistoricalAnswers, @Accuracy, @topicType, @TopicCategory, @TopicSubcategory, @first_time)";
 
                 SqlCommand cmd = new SqlCommand(query, connection);
                 DateTime now = DateTime.Now;
@@ -75,6 +75,7 @@ namespace learningEX
                 cmd.Parameters.AddWithValue("@Topictype", topicType);
                 cmd.Parameters.AddWithValue("@TopicCategory", TopicCategory);
                 cmd.Parameters.AddWithValue("@TopicSubcategory", TopicSubcategory);
+                cmd.Parameters.AddWithValue("@first_time", first_time);
 
                 HttpContext.Current.Session.Remove("Accuracy");
                 HttpContext.Current.Session.Remove("answerResults");

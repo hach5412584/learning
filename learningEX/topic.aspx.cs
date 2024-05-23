@@ -374,11 +374,11 @@ namespace learningEX
         {
             try
             {
-                if (Request.Cookies["Answers"] != null && Request.Cookies["Question"] != null)
+                if (Session["answers_list"] != null)
                 {
-                    List<string> answers_string = Session["AnswersString"] as List<string>;
+                    List<string> answers = Session["answers_list"] as List<string>;
                     int currentPage = Convert.ToInt32(Session["currentPage"]);
-                    return answers_string[currentPage];
+                    return answers[currentPage];
                 }
                 else
                 {
