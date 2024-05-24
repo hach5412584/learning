@@ -49,6 +49,9 @@
                             </ul>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="learning_scale2.aspx">學習動機量表</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="logout.aspx">登出</a>
                     </li>
                 </ul>

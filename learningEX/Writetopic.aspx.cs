@@ -13,7 +13,7 @@ namespace learningEX
         string connectionString = "Data Source=DESKTOP-VLAJAD1;Initial Catalog=TopicDatabase;User Id=test;Password=;"; // 替换为您的数据库连接字符串
         List<Item> items = new List<Item>(); // 用于存储物品信息
         List<string> userinputscope = new List<string>();
-        List<string[]> userinputdata = new List<string[]>();       
+        List<string[]> userinputdata = new List<string[]>();
         private static int itemCount;
         private static int capacity;
         private static int userid;
@@ -26,7 +26,7 @@ namespace learningEX
         string sort = "";
         string node1 = "";
         string node2 = "";
-        string node3 = "";       
+        string node3 = "";
         string topicgroupid = "";
         int weightans = 0;
         string topicUrl = "";
@@ -62,7 +62,7 @@ namespace learningEX
                 topicUrl = Session["TopicUrl"].ToString();
             }
         }
-       
+
         private void GetItemsFromTextBoxes()
         {
             CheckInputdata = true;
@@ -86,26 +86,26 @@ namespace learningEX
                     int.TryParse(valueTextBox.Text, out value);
                     if (weight > 0 && value > 0 && weight <= capacity)
                     {
-                        System.Diagnostics.Debug.WriteLine($"成功获取到物品 {i + 1} 的重量：{weight}，价值：{value}");
+                        System.Diagnostics.Debug.WriteLine($"成功讀取到物品 {i + 1} 的重量：{weight}，價值：{value}");
                         items.Add(new Item(weight, value));
                         userinputdata.Add(new string[] { (i + 1).ToString(), weight.ToString(), value.ToString() });
                     }
                     else if (weight > capacity)
                     {
-                        System.Diagnostics.Debug.WriteLine($"无法获取到物品 {i + 1} 的重量和价值");
+                        System.Diagnostics.Debug.WriteLine($"無法讀取到物品 {i + 1} 的重量和價值");
                         message = "※輸入錯誤 超出背包重量 請重新輸入";
                         CheckInputdata = false;
                     }
                     else
                     {
-                        System.Diagnostics.Debug.WriteLine($"无法获取到物品 {i + 1} 的重量和价值");
+                        System.Diagnostics.Debug.WriteLine($"無法讀取到物品 {i + 1} 的重量和價值");
                         message = "※輸入錯誤 必須大於0 請重新輸入";
                         CheckInputdata = false;
                     }
                 }
                 else
                 {
-                    CheckInputdata =false;                  
+                    CheckInputdata = false;
                 }
             }
             lblMessage.Text = message;
@@ -115,7 +115,7 @@ namespace learningEX
         {
             // 在每次提交按钮点击时，获取用户输入并保存到 items 列表
             GetItemsFromTextBoxes();
-            if (CheckInputdata == true) { main(); }          
+            if (CheckInputdata == true) { main(); }
         }
 
         protected void main()
@@ -132,7 +132,7 @@ namespace learningEX
 
             // 使用遞迴計算最大獲利
             List<List<int>> allNodes = new List<List<int>>(); // 存儲所有節點的索引
-            List<int> selectedItems = KnapsackBranchAndBound(0, 0, 0, items, capacity, ref maxProfit, allNodes, ref shortcut,ref weightans);
+            List<int> selectedItems = KnapsackBranchAndBound(0, 0, 0, items, capacity, ref maxProfit, allNodes, ref shortcut, ref weightans);
             StringBuilder sb = new StringBuilder();
             foreach (var node in allNodes)
             {
@@ -155,7 +155,7 @@ namespace learningEX
             int num = 0;
             foreach (List<int> node in allNodes)
             {
-                if ( node[0]== 0 && node[1]== 0 && num<2)
+                if (node[0] == 0 && node[1] == 0 && num < 2)
                 {
                     if (num == 0)
                     {
@@ -172,7 +172,7 @@ namespace learningEX
 
             node2 = string.Join(",", allNodes[1].ToArray());
 
-            List<string> answers = new List<string>();           
+            List<string> answers = new List<string>();
             answers.Add(sort);
             answers.Add(node1);
             answers.Add(node2);
@@ -187,7 +187,7 @@ namespace learningEX
             Response.Redirect(topicUrl);
             //checkTopicGroupID();
         }
-       
+
         private void checkTopicGroupID()
         {
             // 生成随机的 6 位数字字符串
@@ -283,7 +283,7 @@ namespace learningEX
             ItemPanel.Controls.Add(weightTextBox);
 
             Label valueLabel = new Label();
-            valueLabel.Text = $" 价值：";
+            valueLabel.Text = $" 價值：";
             ItemPanel.Controls.Add(valueLabel);
 
             TextBox valueTextBox = new TextBox();
@@ -295,7 +295,7 @@ namespace learningEX
 
 
         // 遞迴計算最大獲利，同時存取所有節點
-        private List<int> KnapsackBranchAndBound( int level, int weight, int profit, List<Item> items, int capacity, ref int maxProfit, List<List<int>> allNodes, ref int shortcut,ref int weightans)
+        private List<int> KnapsackBranchAndBound(int level, int weight, int profit, List<Item> items, int capacity, ref int maxProfit, List<List<int>> allNodes, ref int shortcut, ref int weightans)
         {
             // 加入當前節點到所有節點列表
             allNodes.Add(new List<int> { profit, weight, (int)Bound(level, weight, profit, items, capacity) });
@@ -307,9 +307,9 @@ namespace learningEX
             // 如果已經考慮完所有物品，更新最大獲利並返回
             if (level == items.Count)
             {
-                maxProfit = Math.Max(maxProfit, profit);               
-                weightans =weight;
-                shortcut =level;
+                maxProfit = Math.Max(maxProfit, profit);
+                weightans = weight;
+                shortcut = level;
                 return new List<int>(); // 返回空列表表示結束遞迴
             }
 
@@ -318,14 +318,14 @@ namespace learningEX
 
             // 如果上界小於等於已知最大值，剪枝
             if (bound <= maxProfit)
-            {                
+            {
                 return new List<int>();
             }
             // 考慮將當前物品放入背包
-            List<int> selectedItemsInclude = KnapsackBranchAndBound( level + 1, weight + items[level].Weight, profit + items[level].Value, items, capacity, ref maxProfit, allNodes, ref shortcut,ref weightans);
+            List<int> selectedItemsInclude = KnapsackBranchAndBound(level + 1, weight + items[level].Weight, profit + items[level].Value, items, capacity, ref maxProfit, allNodes, ref shortcut, ref weightans);
 
             // 不放入物品
-            List<int> selectedItemsExclude = KnapsackBranchAndBound( level + 1, weight, profit, items, capacity, ref maxProfit, allNodes, ref shortcut, ref weightans);
+            List<int> selectedItemsExclude = KnapsackBranchAndBound(level + 1, weight, profit, items, capacity, ref maxProfit, allNodes, ref shortcut, ref weightans);
 
             // 返回兩者中的最大值
             if (CalculateTotalValue(selectedItemsInclude, items) > CalculateTotalValue(selectedItemsExclude, items))

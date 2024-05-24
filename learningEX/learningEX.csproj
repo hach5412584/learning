@@ -85,6 +85,7 @@
     <Content Include="InputItem.aspx" />
     <Content Include="learning_map.aspx" />
     <Content Include="learning_scale.aspx" />
+    <Content Include="learning_scale2.aspx" />
     <Content Include="login.aspx" />
     <Content Include="logout.aspx" />
     <Content Include="mainpage.aspx" />
@@ -168,6 +169,13 @@
     </Compile>
     <Compile Include="learning_scale.aspx.designer.cs">
       <DependentUpon>learning_scale.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="learning_scale2.aspx.cs">
+      <DependentUpon>learning_scale2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="learning_scale2.aspx.designer.cs">
+      <DependentUpon>learning_scale2.aspx</DependentUpon>
     </Compile>
     <Compile Include="login.aspx.cs">
       <DependentUpon>login.aspx</DependentUpon>
